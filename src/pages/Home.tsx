@@ -21,10 +21,14 @@ export default function Home() {
         // Eseguiamo due chiamate API in parallelo per efficienza!
         const [pageResponse, postsResponse] = await Promise.all([
           fetch(
-            "http://radicinchiantibackend.local/wp-json/wp/v2/pages?slug=home&_embed=true"
+            `${
+              import.meta.env.VITE_API_BASE_URL
+            }/wp-json/wp/v2/pages?slug=home&_embed=true`
           ),
           fetch(
-            "http://radicinchiantibackend.local/wp-json/wp/v2/posts?per_page=3&_embed=true"
+            `${
+              import.meta.env.VITE_API_BASE_URL
+            }/wp-json/wp/v2/posts?per_page=3&_embed=true`
           ), // Prendi solo gli ultimi 3 articoli
         ]);
 

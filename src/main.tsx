@@ -1,6 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme";
+import router from "./router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -13,28 +16,13 @@ import Support from "./pages/Support";
 import Contact from "./pages/Contact";
 import SinglePost from "./pages/SinglePost";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout />, // Il Layout è l'elemento genitore
-    children: [
-      // Le pagine figlie vengono caricate nell'Outlet del Layout
-      { index: true, element: <Home /> },
-      { path: "news", element: <News /> },
-      { path: "news/:postSlug", element: <SinglePost /> },
-      { path: "chi-siamo", element: <About /> },
-      { path: "progetti", element: <Projects /> },
-      { path: "sostienici", element: <Support /> },
-      { path: "contatti", element: <Contact /> },
-    ],
-  },
-]);
-
 const root = document.getElementById("root");
 if (root) {
   createRoot(root).render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </StrictMode>
   );
 } else {

@@ -14,6 +14,9 @@ export interface WPContent {
       alt_text: string;
     }[];
   };
+    acf?: { 
+    [key: string]: any;
+  };
   // In futuro potremmo aggiungere: excerpt, featured_media, etc.
 }
 

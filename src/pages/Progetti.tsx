@@ -17,7 +17,9 @@ export default function Progetti() {
       try {
         // L'endpoint per le pagine è diverso! Usiamo ?slug=... per trovare la pagina giusta.
         const response = await fetch(
-          "http://radicinchiantibackend.local/wp-json/wp/v2/pages?slug=progetti"
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/wp-json/wp/v2/pages?slug=progetti`
         );
         const data: Page[] = await response.json();
 
