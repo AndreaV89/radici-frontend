@@ -11,6 +11,7 @@ import News from "./pages/News";
 import Projects from "./pages/Progetti";
 import Support from "./pages/Support";
 import Contact from "./pages/Contact";
+import SinglePost from "./pages/SinglePost";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
       // Le pagine figlie vengono caricate nell'Outlet del Layout
       { index: true, element: <Home /> },
       { path: "news", element: <News /> },
+      { path: "news/:postSlug", element: <SinglePost /> },
       { path: "chi-siamo", element: <About /> },
       { path: "progetti", element: <Projects /> },
       { path: "sostienici", element: <Support /> },

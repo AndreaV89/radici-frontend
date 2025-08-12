@@ -17,7 +17,9 @@ export default function About() {
       try {
         // L'endpoint per le pagine è diverso! Usiamo ?slug=... per trovare la pagina giusta.
         const response = await fetch(
-          "http://radicinchiantibackend.local/wp-json/wp/v2/pages?slug=chi-siamo"
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/wp-json/wp/v2/pages?slug=chi-siamo`
         );
         const data: Page[] = await response.json();
 

@@ -1,5 +1,6 @@
 export interface WPContent {
   id: number;
+  slug: string;
   title: {
     rendered: string;
   };
