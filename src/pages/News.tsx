@@ -10,7 +10,7 @@ export default function News() {
     const fetchPosts = async () => {
       try {
         const response = await fetch(
-          "http://radicinchiantibackend.local/wp-json/wp/v2/posts"
+          "http://radicinchiantibackend.local/wp-json/wp/v2/posts?per_page=10&_embed=true"
         );
         const data: Post[] = await response.json();
         setPosts(data);
