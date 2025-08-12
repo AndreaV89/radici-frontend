@@ -161,22 +161,27 @@ export default function Contact() {
         </Grid>
 
         {/* Colonna destra: Mappa */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          {pageData.acf?.["url_embed_Google Maps"] && (
+        <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex" }}>
+          {pageData?.acf?.codice_embed_Maps && (
             <Paper
-              component="iframe"
-              src={pageData.acf["url_embed_Google Maps"]}
+              elevation={3} // L'ombreggiatura, come per le altre card
               sx={{
-                width: "100%",
-                height: "100%",
-                minHeight: "400px",
-                border: 0,
-                borderRadius: 1,
+                flexGrow: 1, // Fa in modo che il Paper riempia lo spazio della Grid
+                overflow: "hidden", // Nasconde eventuali bordi dell'iframe
+                "& iframe": {
+                  width: "100%",
+                  height: "100%",
+                  border: 0,
+                },
               }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+            >
+              <div
+                style={{ width: "100%", height: "100%" }}
+                dangerouslySetInnerHTML={{
+                  __html: pageData.acf.codice_embed_Maps,
+                }}
+              />
+            </Paper>
           )}
         </Grid>
       </Grid>
