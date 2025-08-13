@@ -19,6 +19,7 @@ const router = createBrowserRouter([
       { path: "news/:postSlug", element: <SinglePost /> },
       { path: "chi-siamo", element: <About /> },
       { path: "progetti", element: <Projects /> },
+      { path: "progetti/:postSlug", element: <SinglePost /> },
       { path: "sostienici", element: <Support /> },
       { path: "contatti", element: <Contact /> },
     ],

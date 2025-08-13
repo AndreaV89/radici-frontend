@@ -1,6 +1,7 @@
 import React from "react";
 import { Container, Box, Typography } from "@mui/material";
 import ArticleCard from "../components/ArticleCard";
+import { Link } from "react-router-dom";
 import { Post } from "../types";
 
 export default function News() {
@@ -31,7 +32,13 @@ export default function News() {
         </Typography>
         <hr />
         {posts.map((post) => (
-          <ArticleCard key={post.id} post={post} />
+          <Link
+            key={post.id}
+            to={`/news/${post.slug}`}
+            style={{ textDecoration: "none" }}
+          >
+            <ArticleCard post={post} />
+          </Link>
         ))}
       </Box>
     </Container>
