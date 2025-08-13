@@ -1,7 +1,6 @@
 import React from "react";
 import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import { Link } from "react-router-dom";
-import "../assets/logo.png"; // 1. Importa il logo
 
 const Header: React.FC = () => {
   return (
@@ -12,11 +11,12 @@ const Header: React.FC = () => {
           <Link to="/">
             <Box
               component="img"
-              src="../assets/logo.png"
+              src="/logo.png"
               alt="Logo Radici in Chianti"
               sx={{
                 height: "45px", // Imposta l'altezza desiderata
                 verticalAlign: "middle", // Allinea bene l'immagine
+                filter: "brightness(0) invert(1)",
               }}
             />
           </Link>
