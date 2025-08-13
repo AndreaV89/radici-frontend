@@ -27,8 +27,8 @@ export default function News() {
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          News & Eventi
+        <Typography variant="h3" component="h1" gutterBottom align="center">
+          News
         </Typography>
         <hr />
         {posts.map((post) => (

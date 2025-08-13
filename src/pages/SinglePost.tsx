@@ -10,7 +10,7 @@ import {
 import { Post } from "../types";
 
 interface SinglePostProps {
-  postType: "posts" | "progetto";
+  postType: "posts" | "progetto" | "evento";
 }
 
 export default function SinglePost({ postType }: SinglePostProps) {

@@ -7,18 +7,22 @@ import Projects from "../src/pages/Progetti";
 import Support from "../src/pages/Support";
 import Contact from "../src/pages/Contact";
 import SinglePost from "../src/pages/SinglePost";
+import Events from "./pages/Events";
+import Partners from "./pages/Partners";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />, // Il Layout è l'elemento genitore
+    element: <Layout />,
     children: [
-      // Le pagine figlie vengono caricate nell'Outlet del Layout
       { index: true, element: <Home /> },
       { path: "news", element: <News /> },
       { path: "news/:postSlug", element: <SinglePost postType="posts" /> },
+      { path: "eventi", element: <Events /> }, // <-- Rotta per la lista eventi
+      { path: "eventi/:postSlug", element: <SinglePost postType="evento" /> },
       { path: "chi-siamo", element: <About /> },
       { path: "progetti", element: <Projects /> },
+      { path: "partners", element: <Partners /> },
       {
         path: "progetti/:postSlug",
         element: <SinglePost postType="progetto" />,

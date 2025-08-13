@@ -27,10 +27,18 @@ const Header: React.FC = () => {
             Home
           </Button>
           <Button color="inherit" component={Link} to="/news">
-            News & Eventi
+            News
           </Button>
+
+          <Button color="inherit" component={Link} to="/eventi">
+            Eventi
+          </Button>
+
           <Button color="inherit" component={Link} to="/chi-siamo">
             Chi Siamo
+          </Button>
+          <Button color="inherit" component={Link} to="/partners">
+            Partners
           </Button>
           <Button color="inherit" component={Link} to="/progetti">
             Progetti
