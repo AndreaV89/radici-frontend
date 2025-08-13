@@ -9,6 +9,7 @@ import Contact from "../src/pages/Contact";
 import SinglePost from "../src/pages/SinglePost";
 import Events from "./pages/Events";
 import Partners from "./pages/Partners";
+import Tours from "./pages/Tours";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       },
       { path: "sostienici", element: <Support /> },
       { path: "contatti", element: <Contact /> },
+      { path: "escursioni", element: <Tours /> },
     ],
   },
 ]);
