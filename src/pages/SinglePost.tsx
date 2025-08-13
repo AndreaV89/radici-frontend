@@ -9,7 +9,11 @@ import {
 } from "@mui/material";
 import { Post } from "../types";
 
-export default function SinglePost() {
+interface SinglePostProps {
+  postType: "posts" | "progetto";
+}
+
+export default function SinglePost({ postType }: SinglePostProps) {
   // "useParams" legge i parametri dinamici dall'URL, come ":postSlug"
   const { postSlug } = useParams<{ postSlug: string }>();
   const [post, setPost] = useState<Post | null>(null);
@@ -24,21 +28,21 @@ export default function SinglePost() {
         const response = await fetch(
           `${
             import.meta.env.VITE_API_BASE_URL
-          }/wp-json/wp/v2/posts?slug=${postSlug}&_embed=true`
+          }/wp-json/wp/v2/${postType}?slug=${postSlug}&_embed=true`
         );
         const data: Post[] = await response.json();
         if (data.length > 0) {
           setPost(data[0]);
         }
       } catch (error) {
-        console.error("Errore nel caricamento dell'articolo:", error);
+        console.error(`Errore nel caricamento di ${postType}:`, error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchPost();
-  }, [postSlug]); // L'effetto si attiva ogni volta che "postSlug" cambia
+  }, [postSlug, postType]);
 
   if (loading) {
     return (

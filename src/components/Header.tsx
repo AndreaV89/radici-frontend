@@ -1,14 +1,26 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import { Link } from "react-router-dom";
+import "../assets/logo.png"; // 1. Importa il logo
 
 const Header: React.FC = () => {
   return (
     <AppBar position="sticky">
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Radici in Chianti
-        </Typography>
+        {/* 2. Sostituisci Typography con l'immagine del logo */}
+        <Box sx={{ flexGrow: 1 }}>
+          <Link to="/">
+            <Box
+              component="img"
+              src="../assets/logo.png"
+              alt="Logo Radici in Chianti"
+              sx={{
+                height: "45px", // Imposta l'altezza desiderata
+                verticalAlign: "middle", // Allinea bene l'immagine
+              }}
+            />
+          </Link>
+        </Box>
 
         <Box>
           <Button color="inherit" component={Link} to="/">

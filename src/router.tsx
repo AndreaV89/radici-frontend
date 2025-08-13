@@ -16,10 +16,13 @@ const router = createBrowserRouter([
       // Le pagine figlie vengono caricate nell'Outlet del Layout
       { index: true, element: <Home /> },
       { path: "news", element: <News /> },
-      { path: "news/:postSlug", element: <SinglePost /> },
+      { path: "news/:postSlug", element: <SinglePost postType="posts" /> },
       { path: "chi-siamo", element: <About /> },
       { path: "progetti", element: <Projects /> },
-      { path: "progetti/:postSlug", element: <SinglePost /> },
+      {
+        path: "progetti/:postSlug",
+        element: <SinglePost postType="progetto" />,
+      },
       { path: "sostienici", element: <Support /> },
       { path: "contatti", element: <Contact /> },
     ],
