@@ -45,3 +45,7 @@
   background: transparent;
   border: none;
 }
+
+.leaflet-container {
+  position: relative;
+}

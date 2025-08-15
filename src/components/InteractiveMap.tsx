@@ -4,6 +4,15 @@ import { LatLngExpression, divIcon } from "leaflet";
 import ReactDOMServer from "react-dom/server";
 import { Post } from "../types";
 
+import {
+  Box,
+  Typography,
+  Paper,
+  FormGroup,
+  FormControlLabel,
+  Switch,
+} from "@mui/material";
+
 // Importiamo le icone che useremo per le diverse categorie
 import LocationOnIcon from "@mui/icons-material/LocationOn"; // Default
 import EventIcon from "@mui/icons-material/Event";
@@ -14,7 +23,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 const apiKey = import.meta.env.VITE_THUNDERFOREST_API_KEY;
 
 // Funzione per creare icone colorate dinamicamente
-const createColoredIcon = (IconComponent: typeof SvgIcon, color: string) => {
+const createColoredIcon = (IconComponent: any, color: string) => {
   const iconHtml = ReactDOMServer.renderToString(
     <IconComponent style={{ color: color, fontSize: 32 }} />
   );
@@ -41,9 +50,22 @@ interface MapPoint extends Post {
   type: keyof typeof icons;
 }
 
+const filterOptions = {
+  progetto: { label: "Progetti", color: "#0288d1" },
+  evento: { label: "Eventi", color: "#d32f2f" },
+  partner: { label: "Partners", color: "#388e3c" },
+  escursione: { label: "Escursioni", color: "#f57c00" },
+};
+
 export default function InteractiveMap() {
   const center: LatLngExpression = [43.47, 11.35];
   const [points, setPoints] = useState<MapPoint[]>([]);
+  const [filters, setFilters] = useState({
+    progetto: true,
+    evento: true,
+    partner: true,
+    escursione: true,
+  });
 
   useEffect(() => {
     const fetchAllPoints = async () => {
@@ -74,11 +96,22 @@ export default function InteractiveMap() {
     fetchAllPoints();
   }, []);
 
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters({
+      ...filters,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
+  const filteredPoints = points.filter(
+    (point) => filters[point.type as keyof typeof filters]
+  );
+
   return (
     <MapContainer
       center={center}
       zoom={10}
-      style={{ height: "500px", width: "100%", borderRadius: "8px" }}
+      style={{ height: "800px", width: "100%", borderRadius: "8px" }}
     >
       {/* <TileLayer
         attribution='&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -97,7 +130,59 @@ export default function InteractiveMap() {
         pane="markerPane"
       />
 
-      {points.map((point) => {
+      <Box sx={{ position: "absolute", top: 10, right: 10, zIndex: 1000 }}>
+        <Paper
+          elevation={4}
+          sx={{ p: 2, backgroundColor: "rgba(255,255,255,0.9)" }}
+        >
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Filtri
+          </Typography>
+          <FormGroup>
+            {Object.entries(filterOptions).map(([key, value]) => (
+              <FormControlLabel
+                key={key}
+                control={
+                  <Switch
+                    checked={filters[key as keyof typeof filters]}
+                    onChange={handleFilterChange}
+                    name={key}
+                  />
+                }
+                label={value.label}
+              />
+            ))}
+          </FormGroup>
+        </Paper>
+      </Box>
+
+      <Box sx={{ position: "absolute", bottom: 10, left: 10, zIndex: 1000 }}>
+        <Paper
+          elevation={4}
+          sx={{ p: 2, backgroundColor: "rgba(255,255,255,0.9)" }}
+        >
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Legenda
+          </Typography>
+          {Object.entries(filterOptions).map(([key, value]) => (
+            <Box
+              key={key}
+              sx={{ display: "flex", alignItems: "center", mb: 0.5 }}
+            >
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: icons[key as keyof typeof icons].options.html ?? "",
+                }}
+              />
+              <Typography variant="body2" sx={{ ml: 1 }}>
+                {value.label}
+              </Typography>
+            </Box>
+          ))}
+        </Paper>
+      </Box>
+
+      {filteredPoints.map((point) => {
         if (point.acf?.latitudine && point.acf?.longitudine) {
           const position: LatLngExpression = [
             point.acf.latitudine,

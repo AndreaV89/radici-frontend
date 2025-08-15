@@ -12,7 +12,7 @@ const Hero: React.FC = () => {
     <Box
       sx={{
         position: "relative",
-        height: "70vh",
+        height: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
