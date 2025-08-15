@@ -103,6 +103,7 @@ export default function Weather() {
           temp: Math.round(currentResponse.data.main.temp),
           icon: currentResponse.data.weather[0].icon,
           description: currentResponse.data.weather[0].description,
+          weather: currentResponse.data.weather,
         });
 
         // Processiamo i dati per "Domani" e i giorni successivi dalla lista delle previsioni
@@ -125,6 +126,7 @@ export default function Weather() {
             temp: Math.round(tomorrowData.main.temp),
             icon: tomorrowData.weather[0].icon,
             description: tomorrowData.weather[0].description,
+            weather: tomorrowData.weather,
           });
         }
 
@@ -147,6 +149,7 @@ export default function Weather() {
               temp: Math.round(item.main.temp),
               icon: item.weather[0].icon,
               description: item.weather[0].description,
+              weather: item.weather,
             });
           }
         });
@@ -170,82 +173,90 @@ export default function Weather() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ my: 4 }}>
+    <Container maxWidth="lg" sx={{ my: 4 }}>
       <Typography variant="h3" component="h1" gutterBottom align="center">
         Meteo a {locationName}
       </Typography>
 
-      {/* Sezione OGGI */}
-      {today && (
-        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h4">Oggi, {today.dayName}</Typography>
-          <Grid container alignItems="center" spacing={2}>
-            <Grid size={{ xs: 12, md: 6 }}>
+      {/* Sezione Oggi e Domani con card più compatte */}
+      <Grid container spacing={4} sx={{ mb: 5 }}>
+        {today && (
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={3} sx={{ p: 2, height: "100%" }}>
+              <Typography variant="h5" align="center">
+                Oggi
+              </Typography>
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
+                  justifyContent: "space-around",
                 }}
               >
-                {getWeatherIcon(today.weather[0].main, "large")}
-                <Typography variant="h1" component="p" sx={{ ml: 2 }}>
-                  {today.temp}°C
-                </Typography>
+                <img
+                  src={`http://openweathermap.org/img/wn/${today.icon}@2x.png`}
+                  alt={today.description}
+                />
+                <Typography variant="h2">{today.temp}°</Typography>
               </Box>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="h5" sx={{ textTransform: "capitalize" }}>
+              <Typography
+                variant="h6"
+                align="center"
+                sx={{ textTransform: "capitalize" }}
+              >
                 {today.description}
               </Typography>
-            </Grid>
+            </Paper>
           </Grid>
-        </Paper>
-      )}
-
-      {/* Sezione DOMANI - Aggiunto controllo "tomorrow &&" */}
-      {tomorrow && (
-        <Paper elevation={3} sx={{ p: 3, mb: 5 }}>
-          <Typography variant="h4">Domani, {tomorrow.dayName}</Typography>
-          <Grid container alignItems="center" spacing={2}>
-            <Grid size={{ xs: 12, md: 6 }}>
+        )}
+        {tomorrow && (
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={3} sx={{ p: 2, height: "100%" }}>
+              <Typography variant="h5" align="center">
+                Domani
+              </Typography>
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
+                  justifyContent: "space-around",
                 }}
               >
-                {getWeatherIcon(tomorrow.weather[0].main, "large")}
-                <Typography variant="h1" component="p" sx={{ ml: 2 }}>
-                  {tomorrow.temp}°C
-                </Typography>
+                <img
+                  src={`http://openweathermap.org/img/wn/${tomorrow.icon}@2x.png`}
+                  alt={tomorrow.description}
+                />
+                <Typography variant="h2">{tomorrow.temp}°</Typography>
               </Box>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="h5" sx={{ textTransform: "capitalize" }}>
+              <Typography
+                variant="h6"
+                align="center"
+                sx={{ textTransform: "capitalize" }}
+              >
                 {tomorrow.description}
               </Typography>
-            </Grid>
+            </Paper>
           </Grid>
-        </Paper>
-      )}
+        )}
+      </Grid>
 
-      {/* Sezione PROSSIMI GIORNI */}
+      {/* Sezione Prossimi Giorni */}
       <Typography variant="h4" component="h2" gutterBottom align="center">
         Prossimi Giorni
       </Typography>
       <Grid container spacing={2}>
         {followingDays.map((day, index) => (
           <Grid size={{ xs: 6, sm: 3 }} key={index}>
-            <Card>
-              <CardContent sx={{ textAlign: "center" }}>
+            <Card sx={{ height: "100%" }}>
+              <CardContent sx={{ textAlign: "center", p: 1 }}>
                 <Typography variant="h6" sx={{ textTransform: "capitalize" }}>
                   {day.dayName}
                 </Typography>
-                {getWeatherIcon(day.weather[0].main, "medium")}
+                <img
+                  src={`http://openweathermap.org/img/wn/${day.icon}@2x.png`}
+                  alt={day.description}
+                />
                 <Typography variant="h5">{day.temp}°C</Typography>
-                {/* 3. AGGIUNGIAMO LA DESCRIZIONE TESTUALE */}
                 <Typography
                   variant="body2"
                   color="text.secondary"
