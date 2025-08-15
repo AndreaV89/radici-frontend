@@ -5,6 +5,7 @@ import {
   Typography,
   CircularProgress,
   Grid,
+  Paper,
 } from "@mui/material";
 import Hero from "../components/Hero";
 import ArticleCard from "../components/ArticleCard";
@@ -77,25 +78,52 @@ export default function Home() {
         )}
 
         {/* Sezione Ultime News */}
-        <Box sx={{ my: 5 }}>
+        <Container
+          maxWidth="lg"
+          sx={{
+            position: "relative",
+            zIndex: 2, // Mettiamo le news sopra alla mappa
+            mb: -10, // Margine negativo per farle "galleggiare" sulla mappa sottostante
+          }}
+        >
           <Typography variant="h4" component="h2" gutterBottom>
             Ultime News & Eventi
           </Typography>
           <Grid container spacing={4}>
             {latestPosts.map((post) => (
               <Grid key={post.id} size={{ xs: 12, md: 4 }}>
-                <ArticleCard post={post} />
+                {/* Diamo uno sfondo solido alle card per non farle essere trasparenti sulla mappa */}
+                <Paper elevation={4}>
+                  <ArticleCard post={post} />
+                </Paper>
               </Grid>
             ))}
           </Grid>
-        </Box>
-        <Box sx={{ my: 5 }}>
-          <Typography variant="h4" component="h2" gutterBottom align="center">
-            Esplora il Territorio
-          </Typography>
-          <InteractiveMap />
-        </Box>
+        </Container>
       </Container>
+
+      {/* Sezione Mappa a Piena Larghezza */}
+      <Box
+        sx={{
+          position: "relative",
+          zIndex: 1,
+          pt: 20, // Padding superiore per fare spazio alle news che fluttuano sopra
+          pb: 10,
+          bgcolor: "#f5f5f5", // Un colore di sfondo per la sezione
+        }}
+      >
+        <Typography
+          variant="h3"
+          component="h2"
+          gutterBottom
+          align="center"
+          sx={{ mb: 4 }}
+        >
+          Esplora il Territorio
+        </Typography>
+        {/* La mappa ora vive in un contenitore che non ha i margini laterali */}
+        <InteractiveMap />
+      </Box>
     </>
   );
 }
