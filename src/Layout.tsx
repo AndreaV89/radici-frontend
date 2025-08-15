@@ -10,7 +10,6 @@ export default function Layout() {
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <CssBaseline />
       <Header />
-
       <Box component="main" sx={{ flexGrow: 1 }}>
         {/* Qui verranno caricate le nostre pagine (Home, About, ecc.) */}
         <Outlet />

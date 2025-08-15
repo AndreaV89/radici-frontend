@@ -17,7 +17,14 @@ export interface WPContent {
     acf?: { 
     [key: string]: any;
   };
-  // In futuro potremmo aggiungere: excerpt, featured_media, etc.
+}
+
+export interface PointOfInterest extends WPContent {
+  acf?: {
+    latitudine?: number;
+    longitudine?: number;
+    [key: string]: any; // Permette altri campi ACF
+  };
 }
 
 export type Page = WPContent;

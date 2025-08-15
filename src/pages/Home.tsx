@@ -6,9 +6,10 @@ import {
   CircularProgress,
   Grid,
 } from "@mui/material";
+import Hero from "../components/Hero";
+import ArticleCard from "../components/ArticleCard";
+import InteractiveMap from "../components/InteractiveMap";
 import { Page, Post } from "../types";
-import Hero from "../components/Hero"; // Il nostro nuovo componente
-import ArticleCard from "../components/ArticleCard"; // Il nostro componente riutilizzabile!
 
 export default function Home() {
   const [pageData, setPageData] = useState<Page | null>(null);
@@ -87,6 +88,12 @@ export default function Home() {
               </Grid>
             ))}
           </Grid>
+        </Box>
+        <Box sx={{ my: 5 }}>
+          <Typography variant="h4" component="h2" gutterBottom align="center">
+            Esplora il Territorio
+          </Typography>
+          <InteractiveMap />
         </Box>
       </Container>
     </>

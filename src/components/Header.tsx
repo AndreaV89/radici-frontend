@@ -1,11 +1,13 @@
 import React from "react";
 import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import { Link } from "react-router-dom";
+import TopBar from "./TopBar";
 
 const Header: React.FC = () => {
   return (
-    <AppBar position="sticky">
-      <Toolbar>
+    <AppBar position="sticky" elevation={1}>
+      <TopBar />
+      <Toolbar sx={{ minHeight: "80px" }}>
         {/* 2. Sostituisci Typography con l'immagine del logo */}
         <Box sx={{ flexGrow: 1 }}>
           <Link to="/">
@@ -14,8 +16,9 @@ const Header: React.FC = () => {
               src="/logo.png"
               alt="Logo Radici in Chianti"
               sx={{
-                height: "45px", // Imposta l'altezza desiderata
+                height: "80px", // Imposta l'altezza desiderata
                 verticalAlign: "middle", // Allinea bene l'immagine
+                my: 3,
                 filter: "brightness(0) invert(1)",
               }}
             />
@@ -23,33 +26,78 @@ const Header: React.FC = () => {
         </Box>
 
         <Box>
-          <Button color="inherit" component={Link} to="/">
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
+            to="/"
+          >
             Home
           </Button>
-          <Button color="inherit" component={Link} to="/news">
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
+            to="/news"
+          >
             News
           </Button>
 
-          <Button color="inherit" component={Link} to="/eventi">
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
+            to="/eventi"
+          >
             Eventi
           </Button>
 
-          <Button color="inherit" component={Link} to="/chi-siamo">
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
+            to="/chi-siamo"
+          >
             Chi Siamo
           </Button>
-          <Button color="inherit" component={Link} to="/partners">
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
+            to="/partners"
+          >
             Partners
           </Button>
-          <Button color="inherit" component={Link} to="/progetti">
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
+            to="/progetti"
+          >
             Progetti
           </Button>
-          <Button color="inherit" component={Link} to="/sostienici">
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
+            to="/sostienici"
+          >
             Sostienici
           </Button>
-          <Button color="inherit" component={Link} to="/contatti">
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
+            to="/contatti"
+          >
             Contatti
           </Button>
-          <Button color="inherit" component={Link} to="/escursioni">
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
+            to="/escursioni"
+          >
             Escursioni
           </Button>
         </Box>

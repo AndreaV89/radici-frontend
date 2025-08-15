@@ -10,6 +10,8 @@ import SinglePost from "../src/pages/SinglePost";
 import Events from "./pages/Events";
 import Partners from "./pages/Partners";
 import Tours from "./pages/Tours";
+import Webcam from "./pages/Webcam";
+import Weather from "./pages/Weather";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +33,8 @@ const router = createBrowserRouter([
       { path: "sostienici", element: <Support /> },
       { path: "contatti", element: <Contact /> },
       { path: "escursioni", element: <Tours /> },
+      { path: "webcam", element: <Webcam /> },
+      { path: "meteo", element: <Weather /> },
     ],
   },
 ]);
