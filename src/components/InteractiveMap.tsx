@@ -18,8 +18,7 @@ import {
   CardContent,
 } from "@mui/material";
 
-// Importiamo le icone che useremo per le diverse categorie
-import LocationOnIcon from "@mui/icons-material/LocationOn"; // Default
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EventIcon from "@mui/icons-material/Event";
 import BusinessIcon from "@mui/icons-material/Business";
 import HikingIcon from "@mui/icons-material/Hiking";
@@ -29,13 +28,29 @@ import StorefrontIcon from "@mui/icons-material/Storefront";
 const apiKey = import.meta.env.VITE_THUNDERFOREST_API_KEY;
 
 // Funzione per creare icone colorate dinamicamente
-const createColoredIcon = (IconComponent: any, color: string) => {
-  const iconHtml = ReactDOMServer.renderToString(
-    <IconComponent style={{ color: color, fontSize: 32 }} />
+const createStyledIcon = (IconComponent: React.ElementType, color: string) => {
+  const iconSvgString = ReactDOMServer.renderToString(
+    <IconComponent style={{ color: "white", fontSize: 18 }} />
   );
+
+  const iconHtml = `
+    <div style="
+      background-color: ${color};
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    ">
+      ${iconSvgString}
+    </div>
+  `;
+
   return divIcon({
     html: iconHtml,
-    className: "custom-map-icon", // Usiamo una classe per rimuovere lo sfondo di default
+    className: "custom-map-icon",
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
@@ -44,12 +59,12 @@ const createColoredIcon = (IconComponent: any, color: string) => {
 
 // Creiamo le nostre icone personalizzate
 const icons = {
-  attivita: createColoredIcon(StorefrontIcon, "#7b1fa2"), // Viola
-  progetto: createColoredIcon(AccountBalanceIcon, "#0288d1"), // Blu
-  evento: createColoredIcon(EventIcon, "#d32f2f"), // Rosso
-  partner: createColoredIcon(BusinessIcon, "#388e3c"), // Verde
-  escursione: createColoredIcon(HikingIcon, "#f57c00"), // Arancione
-  default: createColoredIcon(LocationOnIcon, "#757575"), // Grigio
+  attivita: createStyledIcon(StorefrontIcon, "#7b1fa2"), // Viola
+  progetto: createStyledIcon(AccountBalanceIcon, "#0288d1"), // Blu
+  evento: createStyledIcon(EventIcon, "#d32f2f"), // Rosso
+  partner: createStyledIcon(BusinessIcon, "#388e3c"), // Verde
+  escursione: createStyledIcon(HikingIcon, "#f57c00"), // Arancione
+  default: createStyledIcon(LocationOnIcon, "#757575"), // Grigio
 };
 
 // Definiamo il tipo per i nostri punti, aggiungendo il "type"
@@ -58,11 +73,23 @@ interface MapPoint extends Post {
 }
 
 const filterOptions = {
-  progetto: { label: "Progetti", color: "#0288d1" },
-  evento: { label: "Eventi", color: "#d32f2f" },
-  partner: { label: "Partners", color: "#388e3c" },
-  escursione: { label: "Escursioni", color: "#f57c00" },
-  attivita: { label: "Attività", color: "#7b1fa2" },
+  progetto: {
+    label: "Progetti",
+    color: "#0288d1",
+    IconComponent: AccountBalanceIcon,
+  },
+  evento: { label: "Eventi", color: "#d32f2f", IconComponent: EventIcon },
+  partner: { label: "Partners", color: "#388e3c", IconComponent: BusinessIcon },
+  escursione: {
+    label: "Escursioni",
+    color: "#f57c00",
+    IconComponent: HikingIcon,
+  },
+  attivita: {
+    label: "Attività",
+    color: "#7b1fa2",
+    IconComponent: StorefrontIcon,
+  },
 };
 
 export default function InteractiveMap() {
@@ -179,21 +206,32 @@ export default function InteractiveMap() {
           <Typography variant="h6" sx={{ mb: 1 }}>
             Legenda
           </Typography>
-          {Object.entries(filterOptions).map(([key, value]) => (
-            <Box
-              key={key}
-              sx={{ display: "flex", alignItems: "center", mb: 0.5 }}
-            >
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: icons[key as keyof typeof icons].options.html ?? "",
-                }}
-              />
-              <Typography variant="body2" sx={{ ml: 1 }}>
-                {value.label}
-              </Typography>
-            </Box>
-          ))}
+          {Object.entries(filterOptions).map(([key, value]) => {
+            const IconComponent = value.IconComponent;
+            return (
+              <Box
+                key={key}
+                sx={{ display: "flex", alignItems: "center", mb: 0.5 }}
+              >
+                <Paper
+                  elevation={1}
+                  sx={{
+                    borderRadius: "50%",
+                    width: 32,
+                    height: 32,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: value.color,
+                    mr: 1,
+                  }}
+                >
+                  <IconComponent sx={{ color: "white", fontSize: 18 }} />
+                </Paper>
+                <Typography variant="body2">{value.label}</Typography>
+              </Box>
+            );
+          })}
         </Paper>
       </Box>
 
@@ -222,10 +260,9 @@ export default function InteractiveMap() {
 
             const popupContent = (() => {
               // Estraiamo il nome della categoria in modo sicuro
-              const termGroups = point._embedded?.["wp:term"]?.[0];
-              const categoryName = termGroups
-                ? Object.values(termGroups)[0]?.[0]?.name
-                : undefined;
+              const categoryName = point._embedded?.["wp:term"]?.[0]?.[0]?.name;
+
+              console.log(categoryName);
 
               return (
                 <Card
