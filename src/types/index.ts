@@ -13,6 +13,14 @@ export interface WPContent {
       source_url: string;
       alt_text: string;
     }[];
+        'wp:term'?: {
+
+        [key: string]: {
+            id: number;
+            name: string;
+            slug: string;
+        }[];
+    }[];
   };
     acf?: { 
     [key: string]: any;

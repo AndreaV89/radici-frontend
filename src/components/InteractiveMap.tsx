@@ -4,6 +4,7 @@ import { LatLngExpression, divIcon } from "leaflet";
 import ReactDOMServer from "react-dom/server";
 import { Post } from "../types";
 import { Link } from "react-router-dom";
+import MarkerClusterGroup from "react-leaflet-markercluster";
 
 import {
   Box,
@@ -24,7 +25,6 @@ import BusinessIcon from "@mui/icons-material/Business";
 import HikingIcon from "@mui/icons-material/Hiking";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import StorefrontIcon from "@mui/icons-material/Storefront";
-import { a } from "framer-motion/dist/types.d-Cjd591yU";
 
 const apiKey = import.meta.env.VITE_THUNDERFOREST_API_KEY;
 
@@ -197,117 +197,124 @@ export default function InteractiveMap() {
         </Paper>
       </Box>
 
-      {filteredPoints.map((point) => {
-        if (point.acf?.latitudine && point.acf?.longitudine) {
-          const position: LatLngExpression = [
-            point.acf.latitudine,
-            point.acf.longitudine,
-          ];
-          const imageUrl =
-            point._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
+      <MarkerClusterGroup>
+        {filteredPoints.map((point) => {
+          if (point.acf?.latitudine && point.acf?.longitudine) {
+            const position: LatLngExpression = [
+              point.acf.latitudine,
+              point.acf.longitudine,
+            ];
+            const imageUrl =
+              point._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
 
-          let detailUrl = `/${point.type}s/${point.slug}`; // Aggiungiamo una 's' per il plurale
-          if (point.type === "evento") detailUrl = `/eventi/${point.slug}`;
-          if (point.type === "progetto") detailUrl = `/progetti/${point.slug}`;
-          if (point.type === "attivita") detailUrl = `/attivita/${point.slug}`; // Supponendo che la rotta sia al singolare
-          if (point.type === "escursione")
-            detailUrl = `/escursioni/${point.slug}`;
+            let detailUrl = `/${point.type}s/${point.slug}`; // Aggiungiamo una 's' per il plurale
+            if (point.type === "evento") detailUrl = `/eventi/${point.slug}`;
+            if (point.type === "progetto")
+              detailUrl = `/progetti/${point.slug}`;
+            if (point.type === "attivita")
+              detailUrl = `/attivita/${point.slug}`; // Supponendo che la rotta sia al singolare
+            if (point.type === "escursione")
+              detailUrl = `/escursioni/${point.slug}`;
 
-          const isExternalLink =
-            (point.type === "partner" || point.type === "attivita") &&
-            point.acf?.sito_web;
+            const isExternalLink =
+              (point.type === "partner" || point.type === "attivita") &&
+              point.acf?.sito_web;
 
-          const popupContent = (
-            <Card
-              sx={{
-                border: "none",
-                boxShadow: "none",
-                minWidth: "200px",
-              }}
-            >
-              {imageUrl && (
-                <CardMedia
-                  component="img"
-                  height="120"
-                  image={imageUrl}
-                  alt={point.title.rendered}
-                />
-              )}
-              <CardContent sx={{ p: 1, pb: "8px !important" }}>
-                {/* 1. TIPO */}
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ textTransform: "capitalize" }}
+            const popupContent = (() => {
+              // Estraiamo il nome della categoria in modo sicuro
+              const termGroups = point._embedded?.["wp:term"]?.[0];
+              const categoryName = termGroups
+                ? Object.values(termGroups)[0]?.[0]?.name
+                : undefined;
+
+              return (
+                <Card
+                  sx={{ border: "none", boxShadow: "none", minWidth: "220px" }}
                 >
-                  {point.type}
-                </Typography>
-
-                {/* 2. NOME */}
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{ fontSize: "1.1rem", lineHeight: "1.3", mt: 0.5 }}
-                  dangerouslySetInnerHTML={{ __html: point.title.rendered }}
-                />
-
-                {/* 3. INFO CONTESTUALI */}
-                <Box sx={{ mt: 1 }}>
-                  {point.acf?.luogo && (
-                    <Typography variant="body2">
-                      📍 {point.acf.luogo}
-                    </Typography>
+                  {imageUrl && (
+                    <CardMedia
+                      component="img"
+                      height="120"
+                      image={imageUrl}
+                      alt={point.title.rendered}
+                    />
                   )}
-                  {point.type === "evento" && point.acf?.data_evento && (
-                    <Typography variant="body2">
-                      🗓️{" "}
-                      {new Date(point.acf.data_evento).toLocaleDateString(
-                        "it-IT",
-                        { day: "numeric", month: "long", year: "numeric" }
+                  <CardContent sx={{ p: 1, pb: "8px !important" }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ textTransform: "capitalize" }}
+                    >
+                      {point.type}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ fontSize: "1.1rem", lineHeight: "1.3", mt: 0.5 }}
+                      dangerouslySetInnerHTML={{ __html: point.title.rendered }}
+                    />
+                    <Box sx={{ mt: 1 }}>
+                      {point.acf?.luogo && (
+                        <Typography variant="body2">
+                          📍 {point.acf.luogo}
+                        </Typography>
                       )}
-                    </Typography>
-                  )}
-                  {point.type === "attivita" &&
-                    point._embedded?.["wp:term"]?.[0]?.[0]?.name && (
-                      <Typography variant="body2">
-                        🏷️ {point._embedded["wp:term"][0][0].name}
-                      </Typography>
-                    )}
-                </Box>
-              </CardContent>
-            </Card>
-          );
+                      {point.type === "evento" && point.acf?.data_evento && (
+                        <Typography variant="body2">
+                          🗓️{" "}
+                          {new Date(point.acf.data_evento).toLocaleDateString(
+                            "it-IT",
+                            {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            }
+                          )}
+                        </Typography>
+                      )}
+                      {/* Usiamo la variabile 'categoryName' che abbiamo calcolato in modo sicuro */}
+                      {point.type === "attivita" && categoryName && (
+                        <Typography variant="body2">
+                          🏷️ {categoryName}
+                        </Typography>
+                      )}
+                    </Box>
+                  </CardContent>
+                </Card>
+              );
+            })();
 
-          return (
-            <Marker
-              key={point.id}
-              position={position}
-              icon={icons[point.type] || icons.default}
-            >
-              <Popup>
-                {isExternalLink ? (
-                  <a
-                    href={point.acf.sito_web}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: "none", color: "inherit" }}
-                  >
-                    {popupContent}
-                  </a>
-                ) : (
-                  <Link
-                    to={detailUrl}
-                    style={{ textDecoration: "none", color: "inherit" }}
-                  >
-                    {popupContent}
-                  </Link>
-                )}
-              </Popup>
-            </Marker>
-          );
-        }
-        return null;
-      })}
+            return (
+              <Marker
+                key={point.id}
+                position={position}
+                icon={icons[point.type] || icons.default}
+              >
+                <Popup>
+                  {isExternalLink ? (
+                    <a
+                      href={point.acf.sito_web}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      {popupContent}
+                    </a>
+                  ) : (
+                    <Link
+                      to={detailUrl}
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      {popupContent}
+                    </Link>
+                  )}
+                </Popup>
+              </Marker>
+            );
+          }
+          return null;
+        })}
+      </MarkerClusterGroup>
     </MapContainer>
   );
 }
