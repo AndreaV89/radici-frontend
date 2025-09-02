@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { LatLngExpression, divIcon } from "leaflet";
 import ReactDOMServer from "react-dom/server";
 import { Post } from "../types";
+import { Link } from "react-router-dom";
 
 import {
   Box,
@@ -11,6 +12,9 @@ import {
   FormGroup,
   FormControlLabel,
   Switch,
+  Card,
+  CardMedia,
+  CardContent,
 } from "@mui/material";
 
 // Importiamo le icone che useremo per le diverse categorie
@@ -19,6 +23,8 @@ import EventIcon from "@mui/icons-material/Event";
 import BusinessIcon from "@mui/icons-material/Business";
 import HikingIcon from "@mui/icons-material/Hiking";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import StorefrontIcon from "@mui/icons-material/Storefront";
+import { a } from "framer-motion/dist/types.d-Cjd591yU";
 
 const apiKey = import.meta.env.VITE_THUNDERFOREST_API_KEY;
 
@@ -38,6 +44,7 @@ const createColoredIcon = (IconComponent: any, color: string) => {
 
 // Creiamo le nostre icone personalizzate
 const icons = {
+  attivita: createColoredIcon(StorefrontIcon, "#7b1fa2"), // Viola
   progetto: createColoredIcon(AccountBalanceIcon, "#0288d1"), // Blu
   evento: createColoredIcon(EventIcon, "#d32f2f"), // Rosso
   partner: createColoredIcon(BusinessIcon, "#388e3c"), // Verde
@@ -55,6 +62,7 @@ const filterOptions = {
   evento: { label: "Eventi", color: "#d32f2f" },
   partner: { label: "Partners", color: "#388e3c" },
   escursione: { label: "Escursioni", color: "#f57c00" },
+  attivita: { label: "Attività", color: "#7b1fa2" },
 };
 
 export default function InteractiveMap() {
@@ -65,12 +73,19 @@ export default function InteractiveMap() {
     evento: true,
     partner: true,
     escursione: true,
+    attivita: true,
   });
 
   useEffect(() => {
     const fetchAllPoints = async () => {
       // Lista degli endpoint da interrogare
-      const endpoints = ["progetto", "evento", "partner", "escursione"];
+      const endpoints = [
+        "progetto",
+        "evento",
+        "partner",
+        "escursione",
+        "attivita",
+      ];
 
       try {
         const responses = await Promise.all(
@@ -113,11 +128,11 @@ export default function InteractiveMap() {
       zoom={10}
       style={{ height: "800px", width: "100%", borderRadius: "8px" }}
     >
-      {/* <TileLayer
+      <TileLayer
         attribution='&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url={`https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey=${apiKey}`}
-      /> */}
-      <TileLayer
+      />
+      {/* <TileLayer
         attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg"
       />
@@ -128,7 +143,7 @@ export default function InteractiveMap() {
       <TileLayer
         url="https://tiles.stadiamaps.com/tiles/stamen_toner_labels/{z}/{x}/{y}.png"
         pane="markerPane"
-      />
+      /> */}
 
       <Box sx={{ position: "absolute", top: 10, right: 10, zIndex: 1000 }}>
         <Paper
@@ -188,6 +203,81 @@ export default function InteractiveMap() {
             point.acf.latitudine,
             point.acf.longitudine,
           ];
+          const imageUrl =
+            point._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
+
+          let detailUrl = `/${point.type}s/${point.slug}`; // Aggiungiamo una 's' per il plurale
+          if (point.type === "evento") detailUrl = `/eventi/${point.slug}`;
+          if (point.type === "progetto") detailUrl = `/progetti/${point.slug}`;
+          if (point.type === "attivita") detailUrl = `/attivita/${point.slug}`; // Supponendo che la rotta sia al singolare
+          if (point.type === "escursione")
+            detailUrl = `/escursioni/${point.slug}`;
+
+          const isExternalLink =
+            (point.type === "partner" || point.type === "attivita") &&
+            point.acf?.sito_web;
+
+          const popupContent = (
+            <Card
+              sx={{
+                border: "none",
+                boxShadow: "none",
+                minWidth: "200px",
+              }}
+            >
+              {imageUrl && (
+                <CardMedia
+                  component="img"
+                  height="120"
+                  image={imageUrl}
+                  alt={point.title.rendered}
+                />
+              )}
+              <CardContent sx={{ p: 1, pb: "8px !important" }}>
+                {/* 1. TIPO */}
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ textTransform: "capitalize" }}
+                >
+                  {point.type}
+                </Typography>
+
+                {/* 2. NOME */}
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{ fontSize: "1.1rem", lineHeight: "1.3", mt: 0.5 }}
+                  dangerouslySetInnerHTML={{ __html: point.title.rendered }}
+                />
+
+                {/* 3. INFO CONTESTUALI */}
+                <Box sx={{ mt: 1 }}>
+                  {point.acf?.luogo && (
+                    <Typography variant="body2">
+                      📍 {point.acf.luogo}
+                    </Typography>
+                  )}
+                  {point.type === "evento" && point.acf?.data_evento && (
+                    <Typography variant="body2">
+                      🗓️{" "}
+                      {new Date(point.acf.data_evento).toLocaleDateString(
+                        "it-IT",
+                        { day: "numeric", month: "long", year: "numeric" }
+                      )}
+                    </Typography>
+                  )}
+                  {point.type === "attivita" &&
+                    point._embedded?.["wp:term"]?.[0]?.[0]?.name && (
+                      <Typography variant="body2">
+                        🏷️ {point._embedded["wp:term"][0][0].name}
+                      </Typography>
+                    )}
+                </Box>
+              </CardContent>
+            </Card>
+          );
+
           return (
             <Marker
               key={point.id}
@@ -195,11 +285,23 @@ export default function InteractiveMap() {
               icon={icons[point.type] || icons.default}
             >
               <Popup>
-                <b>{point.title.rendered}</b>
-                <p>
-                  {point.type.charAt(0).toUpperCase() + point.type.slice(1)}
-                </p>
-                {/* Potremmo aggiungere un link alla pagina di dettaglio qui */}
+                {isExternalLink ? (
+                  <a
+                    href={point.acf.sito_web}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    {popupContent}
+                  </a>
+                ) : (
+                  <Link
+                    to={detailUrl}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    {popupContent}
+                  </Link>
+                )}
               </Popup>
             </Marker>
           );

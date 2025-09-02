@@ -120,6 +120,14 @@ const Header: React.FC = () => {
             sx={{ fontSize: "1rem" }}
             color="inherit"
             component={Link}
+            to="/attivita"
+          >
+            Attività
+          </Button>
+          <Button
+            sx={{ fontSize: "1rem" }}
+            color="inherit"
+            component={Link}
             to="/contatti"
           >
             Contatti

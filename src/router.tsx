@@ -12,6 +12,7 @@ import Partners from "./pages/Partners";
 import Tours from "./pages/Tours";
 import Webcam from "./pages/Webcam";
 import Weather from "./pages/Weather";
+import Activities from "./pages/Activities";
 
 const router = createBrowserRouter([
   {
@@ -25,14 +26,23 @@ const router = createBrowserRouter([
       { path: "eventi/:postSlug", element: <SinglePost postType="evento" /> },
       { path: "chi-siamo", element: <About /> },
       { path: "progetti", element: <Projects /> },
-      { path: "partners", element: <Partners /> },
       {
         path: "progetti/:postSlug",
         element: <SinglePost postType="progetto" />,
       },
+      { path: "partners", element: <Partners /> },
+      { path: "attivita", element: <Activities /> },
+      {
+        path: "attivita/:postSlug",
+        element: <SinglePost postType="attivita" />,
+      },
       { path: "sostienici", element: <Support /> },
       { path: "contatti", element: <Contact /> },
       { path: "escursioni", element: <Tours /> },
+      {
+        path: "escursioni/:postSlug",
+        element: <SinglePost postType="escursione" />,
+      },
       { path: "webcam", element: <Webcam /> },
       { path: "meteo", element: <Weather /> },
     ],
