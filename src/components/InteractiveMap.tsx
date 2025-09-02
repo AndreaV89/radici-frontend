@@ -188,7 +188,7 @@ export default function InteractiveMap() {
       center={center}
       zoom={13}
       scrollWheelZoom={false}
-      style={{ height: "800px", width: "100%", borderRadius: "8px" }}
+      style={{ height: "800px", width: "100%" }}
     >
       <TileLayer
         attribution='&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

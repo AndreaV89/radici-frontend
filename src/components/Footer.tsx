@@ -11,10 +11,7 @@ const Footer: React.FC = () => {
         py: 3, // Padding verticale (sopra e sotto)
         px: 2, // Padding orizzontale (destra e sinistra)
         mt: "auto", // Margin-top: auto spinge il footer in fondo alla pagina
-        backgroundColor: (theme) =>
-          theme.palette.mode === "light"
-            ? theme.palette.grey[200]
-            : theme.palette.grey[800],
+        backgroundColor: "#f5f5f5",
       }}
     >
       <Container maxWidth="lg">
