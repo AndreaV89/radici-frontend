@@ -13,21 +13,22 @@ export interface WPContent {
       source_url: string;
       alt_text: string;
     }[];
-        'wp:term'?: {
-
-        [key: string]: {
+    'wp:term'?: [
+        {
             id: number;
             name: string;
             slug: string;
-        }[];
-    }[];
+        }[]
+    ];
   };
     acf?: { 
     [key: string]: any;
   };
 }
 
-export interface PointOfInterest extends WPContent {
+export type Page = WPContent;
+export type Post = WPContent;
+export interface PointOfInterest extends Post {
   acf?: {
     latitudine?: number;
     longitudine?: number;
@@ -35,5 +36,3 @@ export interface PointOfInterest extends WPContent {
   };
 }
 
-export type Page = WPContent;
-export type Post = WPContent;

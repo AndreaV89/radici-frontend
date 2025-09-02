@@ -5,7 +5,6 @@ import ReactDOMServer from "react-dom/server";
 import { Post } from "../types";
 import { Link } from "react-router-dom";
 import MarkerClusterGroup from "react-leaflet-markercluster";
-
 import {
   Box,
   Typography,
@@ -54,6 +53,41 @@ const createStyledIcon = (IconComponent: React.ElementType, color: string) => {
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
+  });
+};
+
+// Funzione per creare cluster per le icone troppo vicine
+const createClusterCustomIcon = (cluster: any) => {
+  const count = cluster.getChildCount();
+  let size = "small"; // Puoi definire diverse dimensioni in base al conteggio
+  if (count >= 10 && count < 100) size = "medium";
+  if (count >= 100) size = "large";
+
+  const iconHtml = ReactDOMServer.renderToString(
+    <div
+      style={{
+        backgroundColor: "#6D1E20", // Usiamo il nostro rosso Chianti
+        color: "white",
+        borderRadius: "50%",
+        width: "40px", // Puoi adattare queste dimensioni
+        height: "40px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: "bold",
+        fontSize: "14px",
+        boxShadow: "0 2px 5px rgba(0,0,0,0.4)",
+      }}
+    >
+      {count}
+    </div>
+  );
+
+  return divIcon({
+    html: iconHtml,
+    className: "marker-cluster-custom", // Una classe CSS opzionale se vuoi stili aggiuntivi
+    iconSize: [40, 40], // Deve corrispondere alla larghezza/altezza nel CSS
+    iconAnchor: [20, 20], // Centra l'icona
   });
 };
 
@@ -152,7 +186,8 @@ export default function InteractiveMap() {
   return (
     <MapContainer
       center={center}
-      zoom={10}
+      zoom={13}
+      scrollWheelZoom={false}
       style={{ height: "800px", width: "100%", borderRadius: "8px" }}
     >
       <TileLayer
@@ -172,6 +207,7 @@ export default function InteractiveMap() {
         pane="markerPane"
       /> */}
 
+      {/* FILTRI */}
       <Box sx={{ position: "absolute", top: 10, right: 10, zIndex: 1000 }}>
         <Paper
           elevation={4}
@@ -198,6 +234,7 @@ export default function InteractiveMap() {
         </Paper>
       </Box>
 
+      {/* LEGENDA */}
       <Box sx={{ position: "absolute", bottom: 10, left: 10, zIndex: 1000 }}>
         <Paper
           elevation={4}
@@ -235,7 +272,10 @@ export default function InteractiveMap() {
         </Paper>
       </Box>
 
-      <MarkerClusterGroup>
+      <MarkerClusterGroup
+        iconCreateFunction={createClusterCustomIcon}
+        chunkedLoading
+      >
         {filteredPoints.map((point) => {
           if (point.acf?.latitudine && point.acf?.longitudine) {
             const position: LatLngExpression = [
