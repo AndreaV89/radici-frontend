@@ -311,7 +311,7 @@ export default function InteractiveMap() {
                   {imageUrl && (
                     <CardMedia
                       component="img"
-                      height="120"
+                      height="200"
                       image={imageUrl}
                       alt={point.title.rendered}
                     />

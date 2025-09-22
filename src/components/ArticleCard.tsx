@@ -10,19 +10,20 @@ interface ArticleCardProps {
 const ArticleCard: React.FC<ArticleCardProps> = ({ post }) => {
   const imageUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
 
-  // Ora il componente restituisce solo la Card, senza essere un link.
   return (
     <motion.div
-      whileHover={{ scale: 1.05, y: -5 }} // 3. Aggiungi l'animazione: si ingrandisce e si solleva leggermente
+      whileHover={{ scale: 1.05, y: -5 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
       <Card sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
         {imageUrl && (
           <CardMedia
             component="img"
-            height="194"
             image={imageUrl}
             alt={post.title.rendered}
+            sx={{
+              objectFit: "contain", // Aggiunta fondamentale!
+            }}
           />
         )}
         <CardContent sx={{ flexGrow: 1 }}>

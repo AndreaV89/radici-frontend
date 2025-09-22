@@ -32,7 +32,7 @@ const Footer: React.FC = () => {
               aria-label="Facebook"
               color="inherit"
               component={Link}
-              href="https://facebook.com"
+              href="https://www.facebook.com/radicinchiantiaps"
               target="_blank"
             >
               <FacebookIcon />
@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
               aria-label="Instagram"
               color="inherit"
               component={Link}
-              href="https://instagram.com"
+              href="https://www.instagram.com/radicinchianti/"
               target="_blank"
             >
               <InstagramIcon />
