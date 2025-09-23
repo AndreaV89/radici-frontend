@@ -1,5 +1,4 @@
-// In src/pages/Events.tsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Box,
@@ -10,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import ArticleCard from "../components/ArticleCard";
 import { Post } from "../types";
+import { getPosts } from "../api";
 
 export default function Events() {
   const [events, setEvents] = useState<Post[]>([]);
@@ -17,20 +17,12 @@ export default function Events() {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      try {
-        // Chiamiamo l'endpoint per il custom post type "evento"
-        const response = await fetch(
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/wp-json/wp/v2/evento?_embed=true`
-        );
-        const data: Post[] = await response.json();
+      // 2. USIAMO LA FUNZIONE getPosts SPECIFICANDO IL TIPO "evento"
+      const data = await getPosts("evento");
+      if (data) {
         setEvents(data);
-      } catch (error) {
-        console.error("Errore nel caricamento degli eventi:", error);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
     fetchEvents();
   }, []);

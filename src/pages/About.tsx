@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Box,
@@ -9,6 +9,7 @@ import {
   Avatar,
 } from "@mui/material";
 import { Page, Post } from "../types";
+import { getPageBySlug, getMembers } from "../api";
 
 export default function About() {
   const [pageData, setPageData] = useState<Page | null>(null);
@@ -18,25 +19,21 @@ export default function About() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [pageResponse, membersResponse] = await Promise.all([
-          fetch(
-            `${
-              import.meta.env.VITE_API_BASE_URL
-            }/wp-json/wp/v2/pages?slug=chi-siamo`
-          ),
-          fetch(
-            `${
-              import.meta.env.VITE_API_BASE_URL
-            }/wp-json/wp/v2/membro?_embed=true`
-          ),
+        const [pageResult, membersResult] = await Promise.all([
+          getPageBySlug("chi-siamo"),
+          getMembers(),
         ]);
-        const pageData: Page[] = await pageResponse.json();
-        const membersData: Post[] = await membersResponse.json();
-
-        if (pageData.length > 0) setPageData(pageData[0]);
-        setMembers(membersData);
+        if (pageResult && pageResult.length > 0) {
+          setPageData(pageResult[0]);
+        }
+        if (membersResult) {
+          setMembers(membersResult);
+        }
       } catch (error) {
-        console.error("Errore nel caricamento dei dati:", error);
+        console.error(
+          "Errore nel caricamento dei dati della pagina Chi Siamo:",
+          error
+        );
       } finally {
         setLoading(false);
       }
@@ -74,17 +71,25 @@ export default function About() {
       <Grid container spacing={4}>
         {members.map((member) => (
           <Grid key={member.id} size={{ xs: 12, sm: 6, md: 4 }}>
-            <Paper sx={{ p: 2, textAlign: "center" }}>
+            <Paper sx={{ p: 2, textAlign: "center", height: "100%" }}>
               <Avatar
                 src={member._embedded?.["wp:featuredmedia"]?.[0]?.source_url}
-                sx={{ width: 100, height: 100, margin: "auto", mb: 2 }}
+                sx={{
+                  width: 100,
+                  height: 100,
+                  margin: "auto",
+                  mb: 2,
+                }}
               />
               <Typography
                 variant="h6"
                 dangerouslySetInnerHTML={{ __html: member.title.rendered }}
               />
-              <Typography color="text.secondary">
+              <Typography color="text.secondary" sx={{ fontWeight: "bold" }}>
                 {member.acf?.ruolo}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {member.acf?.occupazione}
               </Typography>
             </Paper>
           </Grid>

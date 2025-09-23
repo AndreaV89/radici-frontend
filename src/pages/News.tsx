@@ -1,28 +1,32 @@
-import React from "react";
-import { Container, Box, Typography } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Container, Box, Typography, CircularProgress } from "@mui/material";
 import ArticleCard from "../components/ArticleCard";
 import { Link } from "react-router-dom";
 import { Post } from "../types";
+import { getPosts } from "../api";
 
 export default function News() {
-  const [posts, setPosts] = React.useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchPosts = async () => {
-      try {
-        const response = await fetch(
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/wp-json/wp/v2/posts?per_page=10&_embed=true`
-        );
-        const data: Post[] = await response.json();
+      const data = await getPosts("posts", "per_page=10&_embed=true");
+      if (data) {
         setPosts(data);
-      } catch (error) {
-        console.error("Errore nel caricamento degli articoli:", error);
       }
+      setLoading(false);
     };
     fetchPosts();
   }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", my: 5 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Container maxWidth="md">

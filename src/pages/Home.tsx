@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Box,
   Typography,
   CircularProgress,
   Grid,
-  Paper,
 } from "@mui/material";
 import Hero from "../components/Hero";
 import ArticleCard from "../components/ArticleCard";
 import InteractiveMap from "../components/InteractiveMap";
 import { Page, Post } from "../types";
 import { Link } from "react-router-dom";
+import { getPageBySlug, getLatestPosts, getUpcomingEvents } from "../api";
 
 export default function Home() {
   const [pageData, setPageData] = useState<Page | null>(null);
@@ -22,36 +22,21 @@ export default function Home() {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        // Eseguiamo due chiamate API in parallelo per efficienza!
-        const [pageResponse, postsResponse, eventsResponse] = await Promise.all(
-          [
-            fetch(
-              `${
-                import.meta.env.VITE_API_BASE_URL
-              }/wp-json/wp/v2/pages?slug=home&_embed=true`
-            ),
-            fetch(
-              `${
-                import.meta.env.VITE_API_BASE_URL
-              }/wp-json/wp/v2/posts?per_page=3&_embed=true`
-            ),
-            fetch(
-              `${
-                import.meta.env.VITE_API_BASE_URL
-              }/wp-json/wp/v2/evento?per_page=3&_embed=true`
-            ),
-          ]
-        );
+        const [pageResult, postsResult, eventsResult] = await Promise.all([
+          getPageBySlug("home"),
+          getLatestPosts(),
+          getUpcomingEvents(),
+        ]);
 
-        const pageData: Page[] = await pageResponse.json();
-        const postsData: Post[] = await postsResponse.json();
-        const eventsData: Post[] = await eventsResponse.json();
-
-        if (pageData.length > 0) {
-          setPageData(pageData[0]);
+        if (pageResult && pageResult.length > 0) {
+          setPageData(pageResult[0]);
         }
-        setLatestPosts(postsData);
-        setUpcomingEvents(eventsData);
+        if (postsResult) {
+          setLatestPosts(postsResult);
+        }
+        if (eventsResult) {
+          setUpcomingEvents(eventsResult);
+        }
       } catch (error) {
         console.error("Errore nel caricamento dei dati della Home:", error);
       } finally {
