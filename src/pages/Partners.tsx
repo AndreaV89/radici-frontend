@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Box,
@@ -12,6 +12,8 @@ import {
   Button,
 } from "@mui/material";
 import { Post } from "../types";
+// 1. IMPORTIAMO LA NOSTRA FUNZIONE API
+import { getPosts } from "../api";
 
 export default function Partners() {
   const [partners, setPartners] = useState<Post[]>([]);
@@ -19,19 +21,12 @@ export default function Partners() {
 
   useEffect(() => {
     const fetchPartners = async () => {
-      try {
-        const response = await fetch(
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/wp-json/wp/v2/partner?_embed=true`
-        );
-        const data: Post[] = await response.json();
+      // 2. USIAMO LA FUNZIONE getPosts SPECIFICANDO IL TIPO "partner"
+      const data = await getPosts("partner");
+      if (data) {
         setPartners(data);
-      } catch (error) {
-        console.error("Errore nel caricamento dei partner:", error);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
     fetchPartners();
   }, []);

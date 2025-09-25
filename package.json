@@ -16,6 +16,7 @@
     "@mui/material": "^7.3.1",
     "axios": "^1.11.0",
     "framer-motion": "^12.23.12",
+    "gpxparser": "^3.0.8",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "osmtogeojson": "^3.0.0-beta.5",

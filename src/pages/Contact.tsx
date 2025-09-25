@@ -17,6 +17,8 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import { Page } from "../types";
+// 1. IMPORTIAMO LA NOSTRA FUNZIONE API
+import { getPageBySlug } from "../api";
 
 export default function Contact() {
   const [pageData, setPageData] = useState<Page | null>(null);
@@ -24,28 +26,18 @@ export default function Contact() {
 
   useEffect(() => {
     const fetchPage = async () => {
-      try {
-        const response = await fetch(
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/wp-json/wp/v2/pages?slug=contatti`
-        );
-        const data: Page[] = await response.json();
-        if (data.length > 0) {
-          setPageData(data[0]);
-        }
-      } catch (error) {
-        console.error("Errore nel caricamento della pagina Contatti:", error);
-      } finally {
-        setLoading(false);
+      // 2. USIAMO LA FUNZIONE getPageBySlug
+      const data = await getPageBySlug("contatti");
+      if (data && data.length > 0) {
+        setPageData(data[0]);
       }
+      setLoading(false);
     };
     fetchPage();
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Per ora, il form non invierà email. Mostriamo solo i dati in console.
     const formData = new FormData(event.currentTarget);
     console.log({
       name: formData.get("name"),
@@ -64,7 +56,11 @@ export default function Contact() {
   }
 
   if (!pageData) {
-    return <Typography>Pagina non trovata.</Typography>;
+    return (
+      <Container sx={{ my: 4 }}>
+        <Typography>Pagina non trovata.</Typography>
+      </Container>
+    );
   }
 
   return (
@@ -82,7 +78,6 @@ export default function Contact() {
       </Typography>
 
       <Grid container spacing={5}>
-        {/* Colonna sinistra: Info e Form */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h5" gutterBottom>
@@ -160,14 +155,13 @@ export default function Contact() {
           </Paper>
         </Grid>
 
-        {/* Colonna destra: Mappa */}
         <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex" }}>
           {pageData?.acf?.codice_embed_Maps && (
             <Paper
-              elevation={3} // L'ombreggiatura, come per le altre card
+              elevation={3}
               sx={{
-                flexGrow: 1, // Fa in modo che il Paper riempia lo spazio della Grid
-                overflow: "hidden", // Nasconde eventuali bordi dell'iframe
+                flexGrow: 1,
+                overflow: "hidden",
                 "& iframe": {
                   width: "100%",
                   height: "100%",

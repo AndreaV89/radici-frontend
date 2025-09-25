@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   Container,
@@ -8,6 +8,7 @@ import {
   Paper,
 } from "@mui/material";
 import { Post } from "../types";
+import { getContentBySlug } from "../api";
 
 interface SinglePostProps {
   postType: "posts" | "progetto" | "evento" | "escursione" | "attivita";
@@ -24,21 +25,14 @@ export default function SinglePost({ postType }: SinglePostProps) {
 
     const fetchPost = async () => {
       setLoading(true);
-      try {
-        const response = await fetch(
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/wp-json/wp/v2/${postType}?slug=${postSlug}&_embed=true`
-        );
-        const data: Post[] = await response.json();
-        if (data.length > 0) {
-          setPost(data[0]);
-        }
-      } catch (error) {
-        console.error(`Errore nel caricamento di ${postType}:`, error);
-      } finally {
-        setLoading(false);
+      const data = await getContentBySlug(postType, postSlug);
+
+      // La nostra funzione restituisce un array, quindi prendiamo il primo elemento
+      if (data && data.length > 0) {
+        setPost(data[0]);
       }
+
+      setLoading(false);
     };
 
     fetchPost();
@@ -53,7 +47,11 @@ export default function SinglePost({ postType }: SinglePostProps) {
   }
 
   if (!post) {
-    return <Typography>Articolo non trovato.</Typography>;
+    return (
+      <Container sx={{ my: 4 }}>
+        <Typography>Articolo non trovato.</Typography>
+      </Container>
+    );
   }
 
   const imageUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url;

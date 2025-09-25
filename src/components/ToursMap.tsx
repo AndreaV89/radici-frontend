@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import { LatLngExpression, Layer, Feature, StyleFunction } from "leaflet";
+import GeoLocation from "./GeoLocation";
 import {
   Box,
   Typography,
@@ -168,6 +169,8 @@ const ToursMap: React.FC = () => {
         scrollWheelZoom={true}
         style={{ height: "100%", width: "100%" }}
       >
+        <GeoLocation />
+
         <TileLayer
           url={`https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}{r}.png?apikey=${
             import.meta.env.VITE_THUNDERFOREST_API_KEY

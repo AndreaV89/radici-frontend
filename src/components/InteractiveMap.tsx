@@ -5,6 +5,7 @@ import ReactDOMServer from "react-dom/server";
 import { Post } from "../types";
 import { Link } from "react-router-dom";
 import MarkerClusterGroup from "react-leaflet-markercluster";
+import GeoLocation from "./GeoLocation";
 import {
   Box,
   Typography,
@@ -190,6 +191,8 @@ export default function InteractiveMap() {
       scrollWheelZoom={false}
       style={{ height: "800px", width: "100%" }}
     >
+      <GeoLocation />
+
       <TileLayer
         attribution='&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url={`https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey=${apiKey}`}
