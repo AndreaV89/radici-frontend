@@ -1,37 +1,42 @@
 import { createTheme } from '@mui/material/styles';
 
+
+
 const theme = createTheme({
   palette: {
     primary: {
       main: '#6D1E20', // Il nostro rosso Chianti
+
     },
     secondary: {
-      main: '#71746F', // Il nostro verde salvia
+      main: '#757575', // Un grigio neutro per elementi secondari
     },
     background: {
-      default: '#FDFBF7', // Lo sfondo caldo
-      paper: '#FFFFFF', // Lo sfondo per gli elementi "su carta" come le Card
+      default: '#FFFFFF', // Sfondo bianco pulito
+      paper: '#F5F5F5',   // Sfondo leggermente grigio per le sezioni
     },
+    text: {
+      primary: '#212121', // Nero non assoluto per una migliore leggibilità
+      secondary: '#757575',
+    }
   },
   typography: {
-    fontFamily: 'Montserrat, sans-serif', // Font di default per tutto
+    fontFamily: '"Inter", sans-serif',
     h1: {
-      fontFamily: 'Playfair Display, serif', // Font specifico per h1
+      fontFamily: '"Playfair Display", serif',
+      fontWeight: 700,
     },
     h2: {
-      fontFamily: 'Playfair Display, serif',
+      fontFamily: '"Playfair Display", serif',
+      fontWeight: 700,
     },
     h3: {
-      fontFamily: 'Playfair Display, serif',
+      fontFamily: '"Playfair Display", serif',
+      fontWeight: 700,
     },
     h4: {
-      fontFamily: 'Playfair Display, serif',
-    },
-    h5: {
-      fontFamily: 'Playfair Display, serif',
-    },
-    h6: {
-      fontFamily: 'Playfair Display, serif',
+      fontFamily: '"Playfair Display", serif',
+      fontWeight: 700,
     },
   },
 });

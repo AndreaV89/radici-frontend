@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Box,
@@ -9,151 +9,111 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
-import axios from "axios";
+import WeatherIcon from "../components/WeatherIcon";
 
-// Importiamo un set di icone da Material-UI
-import WbSunnyIcon from "@mui/icons-material/WbSunny";
-import CloudIcon from "@mui/icons-material/Cloud";
-import GrainIcon from "@mui/icons-material/Grain"; // Per la pioggia
-import AcUnitIcon from "@mui/icons-material/AcUnit"; // Per la neve
-import ThunderstormIcon from "@mui/icons-material/Thunderstorm";
-import FoggyIcon from "@mui/icons-material/Foggy";
-
-interface CurrentWeather {
-  name: string;
-  main: { temp: number };
-  weather: { main: string; description: string; icon: string }[];
-}
-interface ForecastItem {
-  dt: number;
-  dt_txt: string;
-  main: { temp: number };
-  weather: { main: string; description: string; icon: string }[];
-}
-interface DailyForecast {
-  dayName: string;
-  temp: number;
-  icon: string;
-  description: string;
-  weather: { main: string }[];
-}
-
-// 1. FUNZIONE PER SELEZIONARE L'ICONA CORRETTA
-const getWeatherIcon = (
-  weatherMain: string,
-  size: "large" | "medium"
-): ReactElement => {
-  const iconStyle = {
-    fontSize: size === "large" ? 100 : 40,
-    color: "primary.main",
-  };
-
-  switch (weatherMain) {
-    case "Clear":
-      return <WbSunnyIcon sx={iconStyle} />;
-    case "Clouds":
-      return <CloudIcon sx={iconStyle} />;
-    case "Rain":
-    case "Drizzle":
-      return <GrainIcon sx={iconStyle} />;
-    case "Snow":
-      return <AcUnitIcon sx={iconStyle} />;
-    case "Thunderstorm":
-      return <ThunderstormIcon sx={iconStyle} />;
-    default: // Mist, Smoke, Haze, etc.
-      return <FoggyIcon sx={iconStyle} />;
+// La funzione getWeatherDescription e le interfacce non cambiano
+const getWeatherDescription = (code: number): string => {
+  switch (code) {
+    case 0:
+      return "Cielo sereno";
+    case 1:
+      return "Prevalentemente sereno";
+    case 2:
+      return "Parzialmente nuvoloso";
+    case 3:
+      return "Nuvoloso";
+    case 45:
+    case 48:
+      return "Nebbia";
+    case 51:
+    case 53:
+    case 55:
+      return "Pioggerella";
+    case 61:
+      return "Pioggia leggera";
+    case 63:
+      return "Pioggia moderata";
+    case 65:
+      return "Pioggia forte";
+    case 80:
+      return "Rovescio leggero";
+    case 81:
+      return "Rovescio moderato";
+    case 82:
+      return "Rovescio violento";
+    case 71:
+      return "Neve leggera";
+    case 73:
+      return "Neve moderata";
+    case 75:
+      return "Neve forte";
+    case 85:
+    case 86:
+      return "Rovescio di neve";
+    case 95:
+    case 96:
+    case 99:
+      return "Temporale";
+    default:
+      return "Condizioni miste";
   }
 };
 
+interface DailyForecast {
+  dayName: string;
+  formattedDate: string;
+  weatherCode: number;
+  description: string;
+  tempMax: number;
+  tempMin: number;
+}
+
 export default function Weather() {
-  // ... la logica di fetch e gli stati rimangono invariati ...
-  const [today, setToday] = useState<DailyForecast | null>(null);
-  const [tomorrow, setTomorrow] = useState<DailyForecast | null>(null);
+  // 1. NUOVA GESTIONE DELLO STATO
+  const [todayForecast, setTodayForecast] = useState<DailyForecast | null>(
+    null
+  );
+  const [tomorrowForecast, setTomorrowForecast] =
+    useState<DailyForecast | null>(null);
   const [followingDays, setFollowingDays] = useState<DailyForecast[]>([]);
-  const [locationName, setLocationName] = useState("");
+
   const [loading, setLoading] = useState(true);
-  const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+  const locationName = "Chianti";
   const lat = 43.4866;
   const lon = 11.3791;
 
-  // La useEffect rimane identica a prima
   useEffect(() => {
     const fetchWeather = async () => {
-      if (!apiKey) {
-        console.error("API Key di OpenWeather non trovata!");
-        setLoading(false);
-        return;
-      }
+      // La chiamata API non cambia
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
       try {
-        // Torniamo a usare le due chiamate separate che funzionano con la chiave gratuita
-        const [currentResponse, forecastResponse] = await Promise.all([
-          axios.get<CurrentWeather>(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=it`
-          ),
-          axios.get<{ list: ForecastItem[] }>(
-            `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=it`
-          ),
-        ]);
+        const response = await fetch(url);
+        const data = await response.json();
 
-        setLocationName(currentResponse.data.name);
-
-        // Processiamo i dati per "Oggi"
-        setToday({
-          dayName: new Date().toLocaleDateString("it-IT", { weekday: "long" }),
-          temp: Math.round(currentResponse.data.main.temp),
-          icon: currentResponse.data.weather[0].icon,
-          description: currentResponse.data.weather[0].description,
-          weather: currentResponse.data.weather,
-        });
-
-        // Processiamo i dati per "Domani" e i giorni successivi dalla lista delle previsioni
-        const forecastList = forecastResponse.data.list;
-        const tomorrowData = forecastList.find((item) => {
-          const tomorrow = new Date();
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          return (
-            item.dt_txt.startsWith(tomorrow.toISOString().split("T")[0]) &&
-            item.dt_txt.includes("12:00:00")
-          );
-        });
-
-        if (tomorrowData) {
-          setTomorrow({
-            dayName: new Date(tomorrowData.dt * 1000).toLocaleDateString(
-              "it-IT",
-              { weekday: "long" }
-            ),
-            temp: Math.round(tomorrowData.main.temp),
-            icon: tomorrowData.weather[0].icon,
-            description: tomorrowData.weather[0].description,
-            weather: tomorrowData.weather,
-          });
-        }
-
-        const dailyForecasts: DailyForecast[] = [];
-        const processedDays: string[] = [];
-        forecastList.forEach((item) => {
-          const date = item.dt_txt.split(" ")[0];
-          const todayStr = new Date().toISOString().split("T")[0];
-          const tomorrowStr = tomorrowData?.dt_txt.split(" ")[0] || "";
-          if (
-            !processedDays.includes(date) &&
-            date !== todayStr &&
-            date !== tomorrowStr
-          ) {
-            processedDays.push(date);
-            dailyForecasts.push({
-              dayName: new Date(item.dt * 1000).toLocaleDateString("it-IT", {
-                weekday: "short",
+        // 2. ELABORIAMO I DATI E LI SUDDIVIDIAMO
+        const allForecasts: DailyForecast[] = data.daily.time.map(
+          (dateStr: string, index: number) => {
+            const date = new Date(dateStr);
+            return {
+              dayName: date.toLocaleDateString("it-IT", { weekday: "long" }),
+              formattedDate: date.toLocaleDateString("it-IT", {
+                day: "numeric",
+                month: "long",
               }),
-              temp: Math.round(item.main.temp),
-              icon: item.weather[0].icon,
-              description: item.weather[0].description,
-              weather: item.weather,
-            });
+              weatherCode: data.daily.weather_code[index],
+              description: getWeatherDescription(
+                data.daily.weather_code[index]
+              ),
+              tempMax: Math.round(data.daily.temperature_2m_max[index]),
+              tempMin: Math.round(data.daily.temperature_2m_min[index]),
+            };
           }
-        });
-        setFollowingDays(dailyForecasts.slice(0, 4));
+        );
+
+        // Impostiamo gli stati separati
+        setTodayForecast(allForecasts[0] || null);
+        setTomorrowForecast(allForecasts[1] || null);
+        setFollowingDays(allForecasts.slice(2)); // Tutti i giorni dal terzo in poi
       } catch (error) {
         console.error("Errore nel caricamento dei dati meteo:", error);
       } finally {
@@ -161,9 +121,8 @@ export default function Weather() {
       }
     };
     fetchWeather();
-  }, []);
+  }, [lat, lon]);
 
-  // La parte JSX viene aggiornata per usare le nuove icone e descrizioni
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", my: 5 }}>
@@ -174,96 +133,137 @@ export default function Weather() {
 
   return (
     <Container maxWidth="lg" sx={{ my: 4 }}>
-      <Typography variant="h3" component="h1" gutterBottom align="center">
-        Meteo a {locationName}
+      <Typography variant="h2" component="h1" gutterBottom align="center">
+        {locationName}, il meteo in tempo reale
       </Typography>
 
-      {/* Sezione Oggi e Domani con card più compatte */}
+      {/* 3. NUOVO LAYOUT CON DUE CARD GRANDI */}
       <Grid container spacing={4} sx={{ mb: 5 }}>
-        {today && (
+        {todayForecast && (
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper elevation={3} sx={{ p: 2, height: "100%" }}>
-              <Typography variant="h5" align="center">
+            <Paper
+              elevation={3}
+              sx={{ p: 3, textAlign: "center", height: "100%" }}
+            >
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                 Oggi
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {todayForecast.formattedDate}
+              </Typography>
+              <Box sx={{ my: 2 }}>
+                <WeatherIcon
+                  weatherCode={todayForecast.weatherCode}
+                  width={100}
+                />
+              </Box>
+              <Typography variant="h4" sx={{ textTransform: "capitalize" }}>
+                {todayForecast.description}
               </Typography>
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-around",
+                  justifyContent: "center",
+                  gap: 2,
+                  mt: 1,
                 }}
               >
-                <img
-                  src={`http://openweathermap.org/img/wn/${today.icon}@2x.png`}
-                  alt={today.description}
-                />
-                <Typography variant="h2">{today.temp}°</Typography>
+                <Typography variant="h5">
+                  Min: <b>{todayForecast.tempMin}°</b>
+                </Typography>
+                <Typography variant="h5">
+                  Max: <b>{todayForecast.tempMax}°</b>
+                </Typography>
               </Box>
-              <Typography
-                variant="h6"
-                align="center"
-                sx={{ textTransform: "capitalize" }}
-              >
-                {today.description}
-              </Typography>
             </Paper>
           </Grid>
         )}
-        {tomorrow && (
+        {tomorrowForecast && (
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper elevation={3} sx={{ p: 2, height: "100%" }}>
-              <Typography variant="h5" align="center">
+            <Paper
+              elevation={3}
+              sx={{ p: 3, textAlign: "center", height: "100%" }}
+            >
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                 Domani
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {tomorrowForecast.formattedDate}
+              </Typography>
+              <Box sx={{ my: 2 }}>
+                <WeatherIcon
+                  weatherCode={tomorrowForecast.weatherCode}
+                  width={100}
+                />
+              </Box>
+              <Typography variant="h4" sx={{ textTransform: "capitalize" }}>
+                {tomorrowForecast.description}
               </Typography>
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-around",
+                  justifyContent: "center",
+                  gap: 2,
+                  mt: 1,
                 }}
               >
-                <img
-                  src={`http://openweathermap.org/img/wn/${tomorrow.icon}@2x.png`}
-                  alt={tomorrow.description}
-                />
-                <Typography variant="h2">{tomorrow.temp}°</Typography>
+                <Typography variant="h5">
+                  Min: <b>{tomorrowForecast.tempMin}°</b>
+                </Typography>
+                <Typography variant="h5">
+                  Max: <b>{tomorrowForecast.tempMax}°</b>
+                </Typography>
               </Box>
-              <Typography
-                variant="h6"
-                align="center"
-                sx={{ textTransform: "capitalize" }}
-              >
-                {tomorrow.description}
-              </Typography>
             </Paper>
           </Grid>
         )}
       </Grid>
 
-      {/* Sezione Prossimi Giorni */}
       <Typography variant="h4" component="h2" gutterBottom align="center">
         Prossimi Giorni
       </Typography>
       <Grid container spacing={2}>
         {followingDays.map((day, index) => (
-          <Grid size={{ xs: 6, sm: 3 }} key={index}>
-            <Card sx={{ height: "100%" }}>
-              <CardContent sx={{ textAlign: "center", p: 1 }}>
-                <Typography variant="h6" sx={{ textTransform: "capitalize" }}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+            <Card sx={{ height: "100%", textAlign: "center" }}>
+              <CardContent>
+                <Typography
+                  variant="h6"
+                  sx={{ textTransform: "capitalize", fontWeight: "bold" }}
+                >
                   {day.dayName}
                 </Typography>
-                <img
-                  src={`http://openweathermap.org/img/wn/${day.icon}@2x.png`}
-                  alt={day.description}
-                />
-                <Typography variant="h5">{day.temp}°C</Typography>
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  sx={{ textTransform: "capitalize", mt: 1 }}
+                  sx={{ textTransform: "capitalize" }}
+                >
+                  {day.formattedDate}
+                </Typography>
+                <Box sx={{ my: 1 }}>
+                  <WeatherIcon weatherCode={day.weatherCode} width={64} />
+                </Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ textTransform: "capitalize", mb: 1 }}
                 >
                   {day.description}
                 </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 2,
+                  }}
+                >
+                  <Typography variant="body1">
+                    Min: <b>{day.tempMin}°</b>
+                  </Typography>
+                  <Typography variant="body1">
+                    Max: <b>{day.tempMax}°</b>
+                  </Typography>
+                </Box>
               </CardContent>
             </Card>
           </Grid>

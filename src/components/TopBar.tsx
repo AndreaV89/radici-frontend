@@ -8,14 +8,14 @@ import {
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import VideocamIcon from "@mui/icons-material/Videocam";
-import WbSunnyIcon from "@mui/icons-material/WbSunny"; // Icona meteo di esempio
 import { useWeather } from "../context/WeatherContext";
+import WeatherIcon from "./WeatherIcon"; // 1. IMPORTIAMO WeatherIcon
 
 const TopBar: React.FC = () => {
   const weatherData = useWeather();
 
   return (
-    <Box sx={{ bgcolor: "rgba(0,0,0,0.1)", py: 0.5 }}>
+    <Box sx={{ bgcolor: "transparent", py: 0.5, color: "white" }}>
       <Container maxWidth="lg">
         <Box
           sx={{
@@ -29,7 +29,8 @@ const TopBar: React.FC = () => {
             to="/webcam"
             variant="body2"
             sx={{
-              color: "text.secondary",
+              color: "white",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
               display: "flex",
               alignItems: "center",
               mr: 3,
@@ -45,21 +46,27 @@ const TopBar: React.FC = () => {
               to="/meteo"
               aria-label="meteo"
               size="small"
-              sx={{ mr: 3 }}
+              sx={{
+                mr: 3,
+                color: "white",
+                textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
+              }}
             >
-              <img
-                src={`http://openweathermap.org/img/wn/${weatherData.icon}.png`}
-                alt="weather icon"
-                width="28"
-                height="28"
-              />
+              {/* 2. USIAMO IL NOSTRO COMPONENTE WeatherIcon */}
+              <WeatherIcon weatherCode={weatherData.weatherCode} width={28} />
               <Typography variant="body2" sx={{ ml: 1, fontWeight: "bold" }}>
                 {weatherData.minTemp}°/{weatherData.maxTemp}°
               </Typography>
             </IconButton>
           )}
 
-          <Typography variant="body2" sx={{ cursor: "pointer" }}>
+          <Typography
+            variant="body2"
+            sx={{
+              cursor: "pointer",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
+            }}
+          >
             IT / <b>EN</b>
           </Typography>
         </Box>
