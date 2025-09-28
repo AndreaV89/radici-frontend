@@ -15,18 +15,15 @@ import {
 } from "@mui/material";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import VideocamIcon from "@mui/icons-material/Videocam";
 
 import { useWeather } from "../context/WeatherContext";
 import WeatherIcon from "./WeatherIcon";
 
-// 1. NUOVA STRUTTURA DATI: OGNI SOTTOVOCE HA LA SUA IMMAGINE
 const menuItems = {
   chianti: {
     title: "Chianti",
-    defaultImageUrl: "/images/escursioni.jpg", // Immagine di default per la sezione
+    defaultImageUrl: "/images/escursioni.jpg",
     subItems: [
       {
         label: "Eventi",
@@ -41,48 +38,49 @@ const menuItems = {
       {
         label: "Progetti",
         linkTo: "/progetti",
-        imageUrl: "/images/eventi.jpg",
+        imageUrl: "/images/escursioni.jpg",
       },
       {
         label: "Attività",
         linkTo: "/attivita",
-        imageUrl: "//images/progetti.jpg",
+        imageUrl: "/images/eventi.jpg",
       },
     ],
   },
   chiSiamo: {
     title: "Chi Siamo",
-    defaultImageUrl: "/images/progetti.jpg", // Immagine di default per la sezione
+    defaultImageUrl: "/images/progetti.jpg",
     subItems: [
       {
         label: "La Nostra Storia",
         linkTo: "/chi-siamo",
-        imageUrl: "/images/eventi.jpg",
+        imageUrl: "/images/escursioni.jpg",
       },
       {
         label: "Partners",
         linkTo: "/partners",
-        imageUrl: "/images/progetti.jpg",
+        imageUrl: "/images/eventi.jpg",
       },
       {
         label: "Sostienici",
         linkTo: "/sostienici",
-        imageUrl: "/images/eventi.jpg",
+        imageUrl: "/images/progetti.jpg",
       },
       {
         label: "Contatti",
         linkTo: "/contatti",
-        imageUrl: "/images/eventi.jpg",
+        imageUrl: "/images/escursioni.jpg",
       },
     ],
   },
 };
 
 const Header: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation(); // Rimuoviamo i18n se non serve per cambiare lingua qui
   const [isScrolled, setIsScrolled] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const [hoveredImage, setHoveredImage] = useState<string | null>(null); // 2. NUOVO STATO PER L'IMMAGINE
+  const [hoveredImage, setHoveredImage] = useState<string | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
   const location = useLocation();
   const weatherData = useWeather();
 
@@ -104,6 +102,8 @@ const Header: React.FC = () => {
 
   const handleClose = () => {
     setOpenMenu(null);
+    setIsClosing(true);
+    setTimeout(() => setIsClosing(false), 300);
   };
 
   const isTransparent = isHomePage && !isScrolled && openMenu === null;
@@ -111,7 +111,6 @@ const Header: React.FC = () => {
   const currentData = openMenu
     ? menuItems[openMenu as keyof typeof menuItems]
     : null;
-  // L'immagine da mostrare è quella dell'hover, altrimenti quella di default del menu aperto
   const displayImage = hoveredImage || currentData?.defaultImageUrl;
 
   return (
@@ -120,13 +119,15 @@ const Header: React.FC = () => {
         position={isHomePage ? "fixed" : "sticky"}
         elevation={isScrolled || openMenu !== null ? 4 : 0}
         sx={{
-          backgroundColor: isTransparent ? "transparent" : "background.default",
+          backgroundColor: isTransparent ? "transparent" : "white",
           color: isTransparent ? "white" : "text.primary",
           transition: "all 0.3s ease-in-out",
           "& .MuiToolbar-root": { minHeight: "120px" },
         }}
       >
-        <Toolbar>
+        <Toolbar
+          sx={{ borderBottom: isTransparent ? 0 : 1, borderColor: "divider" }}
+        >
           <Box sx={{ flex: 1 }}>
             <RouterLink to="/">
               <Box
@@ -136,7 +137,8 @@ const Header: React.FC = () => {
                 sx={{
                   height: "60px",
                   verticalAlign: "middle",
-                  filter: "none",
+                  filter: isTransparent ? "brightness(0) invert(1)" : "none",
+                  transition: "filter 0.3s ease-in-out",
                 }}
               />
             </RouterLink>
@@ -146,7 +148,7 @@ const Header: React.FC = () => {
             sx={{ flex: 2, display: "flex", justifyContent: "center", gap: 4 }}
           >
             <Button
-              onClick={() => handleMenuToggle("Chianti")}
+              onClick={() => handleMenuToggle("chianti")}
               color="inherit"
               sx={{
                 fontSize: "1.5rem",
@@ -157,7 +159,7 @@ const Header: React.FC = () => {
               Chianti
             </Button>
             <Button
-              onClick={() => handleMenuToggle("Chi Siamo")}
+              onClick={() => handleMenuToggle("chiSiamo")}
               color="inherit"
               sx={{
                 fontSize: "1.5rem",
@@ -202,6 +204,7 @@ const Header: React.FC = () => {
               gap: 1,
             }}
           >
+            {/* ... icone a destra ... */}
             <IconButton
               color="inherit"
               title="Webcam"
@@ -231,26 +234,18 @@ const Header: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 borderLeft: 1,
-                borderColor: "rgba(255, 255, 255, 0.3)",
+                borderColor: isTransparent
+                  ? "rgba(255, 255, 255, 0.3)"
+                  : "rgba(0, 0, 0, 0.12)",
                 ml: 1,
-                pl: 2,
+                pl: 1,
               }}
             >
-              <Button
-                color="inherit"
-                size="small"
-                onClick={() => i18n.changeLanguage("it")}
-                sx={{ fontWeight: i18n.language === "it" ? "bold" : "normal" }}
-              >
+              <Button color="inherit" size="small">
                 IT
               </Button>
-              <Typography>/</Typography>
-              <Button
-                color="inherit"
-                size="small"
-                onClick={() => i18n.changeLanguage("en")}
-                sx={{ fontWeight: i18n.language === "en" ? "bold" : "normal" }}
-              >
+              <Typography color="inherit">/</Typography>
+              <Button color="inherit" size="small">
                 EN
               </Button>
             </Box>
@@ -264,15 +259,17 @@ const Header: React.FC = () => {
               width: "100%",
               bgcolor: "background.default",
               color: "text.primary",
-              py: 7,
+              py: 5,
+              transition: "opacity 0.3s ease-in-out",
+              opacity: openMenu !== null && !isClosing ? 1 : 0,
+              boxShadow: "none",
             }}
-            onMouseLeave={() => setHoveredImage(null)} // Resetta l'immagine quando si esce dal menu
+            onMouseLeave={() => setHoveredImage(null)}
           >
             <Container>
-              <Grid container spacing={5}>
-                <Grid size={{ xs: 12, md: 4 }}>
+              <Grid container spacing={5} alignItems="center">
+                <Grid size={{ xs: 12, md: 6 }}>
                   {currentData?.subItems.map((item) => (
-                    // 3. AGGIUNTO onMouseEnter A OGNI LINK
                     <MuiLink
                       component={RouterLink}
                       to={item.linkTo}
@@ -284,26 +281,27 @@ const Header: React.FC = () => {
                         color: "text.primary",
                         fontSize: "1.5rem",
                         fontWeight: "bold",
-                        py: 1,
-                        "&:hover": { pl: 1 },
-                        transition: "padding-left 0.2s",
+                        py: 2,
+                        "&:hover": { pl: 1, color: "primary.main" },
+                        transition: "all 0.2s",
                       }}
                     >
-                      {t(item.label.toLowerCase().replace(" ", ""))}
+                      {/* SOLUZIONE: USIAMO DIRETTAMENTE L'ETICHETTA, SENZA TRADUZIONE QUI */}
+                      {item.label}
                     </MuiLink>
                   ))}
                 </Grid>
-                <Grid size={{ xs: 12, md: 7 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Box
                     sx={{
                       width: "100%",
                       height: "100%",
-                      minHeight: "250px",
-                      // 4. L'IMMAGINE DIPENDE DALLO STATO DELL'HOVER
+                      paddingTop: "60%",
+                      position: "relative",
                       backgroundImage: `url(${displayImage})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
-                      borderRadius: 2,
+                      borderRadius: "10px",
                       transition: "background-image 0.3s ease-in-out",
                     }}
                   />
