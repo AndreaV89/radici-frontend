@@ -13,6 +13,7 @@ import Tours from "./pages/Tours";
 import Webcam from "./pages/Webcam";
 import Weather from "./pages/Weather";
 import Activities from "./pages/Activities";
+import Accommodations from "./pages/Accomodations";
 
 const router = createBrowserRouter([
   {
@@ -22,10 +23,15 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "news", element: <News /> },
       { path: "news/:postSlug", element: <SinglePost postType="posts" /> },
-      { path: "eventi", element: <Events /> }, // <-- Rotta per la lista eventi
+      { path: "eventi", element: <Events /> },
       { path: "eventi/:postSlug", element: <SinglePost postType="evento" /> },
       { path: "chi-siamo", element: <About /> },
       { path: "progetti", element: <Projects /> },
+      { path: "alloggi", element: <Accommodations /> },
+      {
+        path: "alloggi/:postSlug",
+        element: <SinglePost postType="alloggio" />,
+      },
       {
         path: "progetti/:postSlug",
         element: <SinglePost postType="progetto" />,

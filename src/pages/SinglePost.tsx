@@ -11,7 +11,13 @@ import { Post } from "../types";
 import { getContentBySlug } from "../api";
 
 interface SinglePostProps {
-  postType: "posts" | "progetto" | "evento" | "escursione" | "attivita";
+  postType:
+    | "posts"
+    | "progetto"
+    | "evento"
+    | "escursione"
+    | "attivita"
+    | "alloggio";
 }
 
 export default function SinglePost({ postType }: SinglePostProps) {
