@@ -21,6 +21,13 @@ import KingBedOutlinedIcon from "@mui/icons-material/KingBedOutlined";
 import { useWeather } from "../context/WeatherContext";
 import WeatherIcon from "./WeatherIcon";
 
+interface SubMenuItem {
+  label: string;
+  linkTo: string;
+  imageUrl?: string; // La '?' significa che è opzionale
+  isButton?: boolean; // Anche questa è opzionale
+}
+
 const menuItems = {
   ilChianti: {
     title: "Il Chianti",
@@ -48,7 +55,7 @@ const menuItems = {
         imageUrl: "/images/escursioni.jpg",
       },
       { label: "Cerca il tuo alloggio", linkTo: "/alloggi", isButton: true }, // Bottone speciale
-    ],
+    ] as SubMenuItem[],
   },
   inCammino: {
     title: "In Cammino",
@@ -64,7 +71,7 @@ const menuItems = {
         linkTo: "/itinerari",
         imageUrl: "/images/escursioni.jpg",
       },
-    ],
+    ] as SubMenuItem[],
   },
   bici: {
     title: "Bici",
@@ -90,7 +97,7 @@ const menuItems = {
         linkTo: "/servizi-bici",
         imageUrl: "/images/escursioni.jpg",
       },
-    ],
+    ] as SubMenuItem[],
   },
   chiSiamo: {
     title: "Chi Siamo",
@@ -121,7 +128,7 @@ const menuItems = {
         linkTo: "/contatti",
         imageUrl: "/images/escursioni.jpg",
       },
-    ],
+    ] as SubMenuItem[],
   },
 };
 
@@ -165,7 +172,7 @@ const Header: React.FC = () => {
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <AppBar
-        position="fixed"
+        position={isHomePage ? "fixed" : "static"}
         elevation={isScrolled || openMenu !== null ? 4 : 0}
         sx={{
           backgroundColor: isTransparent ? "transparent" : "background.default",
@@ -427,7 +434,7 @@ const Header: React.FC = () => {
               <Grid container spacing={5} alignItems="center">
                 <Grid size={{ xs: 12, md: 6 }}>
                   {currentData?.subItems.map((item) =>
-                    item.isButton ? ( // 3. LOGICA PER IL BOTTONE SPECIALE
+                    item.isButton ? (
                       <Box key={item.label} sx={{ mt: 2 }}>
                         <Button
                           component={RouterLink}
@@ -447,7 +454,9 @@ const Header: React.FC = () => {
                         to={item.linkTo}
                         key={item.label}
                         underline="none"
-                        onMouseEnter={() => setHoveredImage(item.imageUrl)}
+                        onMouseEnter={() =>
+                          setHoveredImage(item.imageUrl || null)
+                        }
                         sx={{
                           display: "block",
                           color: "text.primary",
