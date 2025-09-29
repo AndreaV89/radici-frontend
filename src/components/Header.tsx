@@ -113,6 +113,31 @@ const Header: React.FC = () => {
     : null;
   const displayImage = hoveredImage || currentData?.defaultImageUrl;
 
+  const getButtonStyle = (menuKey: string) => ({
+    fontSize: "1rem",
+    position: "relative",
+    // Stile di base quando un QUALSIASI menu è aperto
+    color:
+      openMenu !== null
+        ? isTransparent
+          ? "rgba(255, 255, 255, 0.7)"
+          : "text.secondary"
+        : "inherit",
+    // Sovrascrive lo stile se QUESTO menu è quello attivo
+    ...(openMenu === menuKey && {
+      color: isTransparent ? "white" : "text.primary",
+      "&::after": {
+        content: '""',
+        position: "absolute",
+        bottom: 5, // Posizione della linea
+        left: "20%",
+        right: "20%",
+        height: "3px",
+        backgroundColor: "primary.main", // Colore rosso
+      },
+    }),
+  });
+
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <AppBar
