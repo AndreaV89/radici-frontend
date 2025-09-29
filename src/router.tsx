@@ -15,6 +15,8 @@ import Weather from "./pages/Weather";
 import Activities from "./pages/Activities";
 import Accommodations from "./pages/Accomodations";
 
+const PlaceholderPage = ({ title }: { title: string }) => <h1>{title}</h1>;
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -51,6 +53,27 @@ const router = createBrowserRouter([
       },
       { path: "webcam", element: <Webcam /> },
       { path: "meteo", element: <Weather /> },
+
+      /* ROTTE Da COMPLETARE */
+
+      {
+        path: "storia-e-tradizione",
+        element: <PlaceholderPage title="Storia e Tradizione" />,
+      },
+      { path: "itinerari", element: <PlaceholderPage title="Itinerari" /> },
+      { path: "eroica", element: <PlaceholderPage title="L'Eroica" /> },
+      {
+        path: "bici-da-strada",
+        element: <PlaceholderPage title="Bici da Strada" />,
+      },
+      {
+        path: "fuori-strada",
+        element: <PlaceholderPage title="Fuori Strada" />,
+      },
+      {
+        path: "servizi-bici",
+        element: <PlaceholderPage title="Tutto per la Bici" />,
+      },
     ],
   },
 ]);

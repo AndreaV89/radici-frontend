@@ -16,55 +16,105 @@ import {
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import VideocamIcon from "@mui/icons-material/Videocam";
+import KingBedOutlinedIcon from "@mui/icons-material/KingBedOutlined";
 
 import { useWeather } from "../context/WeatherContext";
 import WeatherIcon from "./WeatherIcon";
 
 const menuItems = {
-  chianti: {
-    title: "Chianti",
+  ilChianti: {
+    title: "Il Chianti",
     defaultImageUrl: "/images/escursioni.jpg",
     subItems: [
       {
-        label: "Eventi",
-        linkTo: "/eventi",
-        imageUrl: "/images/eventi.jpg",
+        label: "Storia e Tradizione",
+        linkTo: "/storia-e-tradizione",
+        imageUrl: "/images/escursioni.jpg",
       },
       {
-        label: "Alloggi",
-        linkTo: "/alloggi",
-        imageUrl: "/images/progetti.jpg",
+        label: "Eventi",
+        linkTo: "/eventi",
+        imageUrl: "/images/escursioni.jpg",
       },
+      { label: "News", linkTo: "/news", imageUrl: "/images/escursioni.jpg" },
       {
         label: "Progetti",
         linkTo: "/progetti",
         imageUrl: "/images/escursioni.jpg",
       },
       {
-        label: "Attività",
+        label: "Negozi e Servizi",
         linkTo: "/attivita",
-        imageUrl: "/images/eventi.jpg",
+        imageUrl: "/images/escursioni.jpg",
+      },
+      { label: "Cerca il tuo alloggio", linkTo: "/alloggi", isButton: true }, // Bottone speciale
+    ],
+  },
+  inCammino: {
+    title: "In Cammino",
+    defaultImageUrl: "/images/progetti.jpg",
+    subItems: [
+      {
+        label: "Escursionismo",
+        linkTo: "/escursioni",
+        imageUrl: "/images/escursioni.jpg",
+      },
+      {
+        label: "Itinerari",
+        linkTo: "/itinerari",
+        imageUrl: "/images/escursioni.jpg",
+      },
+    ],
+  },
+  bici: {
+    title: "Bici",
+    defaultImageUrl: "/images/escursioni.jpg",
+    subItems: [
+      {
+        label: "L'Eroica",
+        linkTo: "/eroica",
+        imageUrl: "/images/escursioni.jpg",
+      },
+      {
+        label: "Bici da strada",
+        linkTo: "/bici-da-strada",
+        imageUrl: "/images/escursioni.jpg",
+      },
+      {
+        label: "Fuori Strada",
+        linkTo: "/fuori-strada",
+        imageUrl: "/images/escursioni.jpg",
+      },
+      {
+        label: "Tutto per la bici",
+        linkTo: "/servizi-bici",
+        imageUrl: "/images/escursioni.jpg",
       },
     ],
   },
   chiSiamo: {
     title: "Chi Siamo",
-    defaultImageUrl: "/images/progetti.jpg",
+    defaultImageUrl: "/images/escursioni.jpg",
     subItems: [
       {
-        label: "La Nostra Storia",
+        label: "L'associazione",
         linkTo: "/chi-siamo",
+        imageUrl: "/images/escursioni.jpg",
+      },
+      {
+        label: "Membri",
+        linkTo: "/chi-siamo#team",
         imageUrl: "/images/escursioni.jpg",
       },
       {
         label: "Partners",
         linkTo: "/partners",
-        imageUrl: "/images/eventi.jpg",
+        imageUrl: "/images/escursioni.jpg",
       },
       {
         label: "Sostienici",
         linkTo: "/sostienici",
-        imageUrl: "/images/progetti.jpg",
+        imageUrl: "/images/escursioni.jpg",
       },
       {
         label: "Contatti",
@@ -107,44 +157,18 @@ const Header: React.FC = () => {
   };
 
   const isTransparent = isHomePage && !isScrolled && openMenu === null;
-
   const currentData = openMenu
     ? menuItems[openMenu as keyof typeof menuItems]
     : null;
   const displayImage = hoveredImage || currentData?.defaultImageUrl;
 
-  const getButtonStyle = (menuKey: string) => ({
-    fontSize: "1rem",
-    position: "relative",
-    // Stile di base quando un QUALSIASI menu è aperto
-    color:
-      openMenu !== null
-        ? isTransparent
-          ? "rgba(255, 255, 255, 0.7)"
-          : "text.secondary"
-        : "inherit",
-    // Sovrascrive lo stile se QUESTO menu è quello attivo
-    ...(openMenu === menuKey && {
-      color: isTransparent ? "white" : "text.primary",
-      "&::after": {
-        content: '""',
-        position: "absolute",
-        bottom: 5, // Posizione della linea
-        left: "20%",
-        right: "20%",
-        height: "3px",
-        backgroundColor: "primary.main", // Colore rosso
-      },
-    }),
-  });
-
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <AppBar
-        position={isHomePage ? "fixed" : "sticky"}
+        position="fixed"
         elevation={isScrolled || openMenu !== null ? 4 : 0}
         sx={{
-          backgroundColor: isTransparent ? "transparent" : "white",
+          backgroundColor: isTransparent ? "transparent" : "background.default",
           color: isTransparent ? "white" : "text.primary",
           transition: "all 0.3s ease-in-out",
           "& .MuiToolbar-root": { minHeight: "120px" },
@@ -160,7 +184,7 @@ const Header: React.FC = () => {
                 src="/logo.png"
                 alt="Logo Radici in Chianti"
                 sx={{
-                  height: "60px",
+                  height: "90px",
                   verticalAlign: "middle",
                   filter: isTransparent ? "brightness(0) invert(1)" : "none",
                   transition: "filter 0.3s ease-in-out",
@@ -173,50 +197,124 @@ const Header: React.FC = () => {
             sx={{ flex: 2, display: "flex", justifyContent: "center", gap: 4 }}
           >
             <Button
-              onClick={() => handleMenuToggle("chianti")}
+              onClick={() => handleMenuToggle("ilChianti")}
               color="inherit"
+              disableRipple
               sx={{
                 fontSize: "1.5rem",
                 fontWeight: "bold",
                 textTransform: "none",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: "12px",
+                  left: "8px",
+                  right: "8px",
+                  height: "2px",
+                  backgroundColor: "primary.main",
+                  transform: "scaleX(0)",
+                  transition: "transform 0.3s ease-in-out",
+                },
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  transition: "all 0.2s ease-in-out",
+                  "&::after": {
+                    transform: "scaleX(1)",
+                  },
+                },
               }}
             >
-              Chianti
+              Il Chianti
+            </Button>
+            <Button
+              onClick={() => handleMenuToggle("inCammino")}
+              color="inherit"
+              disableRipple
+              sx={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                textTransform: "none",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: "12px",
+                  left: "8px",
+                  right: "8px",
+                  height: "2px",
+                  backgroundColor: "primary.main",
+                  transform: "scaleX(0)",
+                  transition: "transform 0.3s ease-in-out",
+                },
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  transition: "all 0.2s ease-in-out",
+                  "&::after": {
+                    transform: "scaleX(1)",
+                  },
+                },
+              }}
+            >
+              In Cammino
+            </Button>
+            <Button
+              onClick={() => handleMenuToggle("bici")}
+              color="inherit"
+              disableRipple
+              sx={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                textTransform: "none",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: "12px",
+                  left: "8px",
+                  right: "8px",
+                  height: "2px",
+                  backgroundColor: "primary.main",
+                  transform: "scaleX(0)",
+                  transition: "transform 0.3s ease-in-out",
+                },
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  transition: "all 0.2s ease-in-out",
+                  "&::after": {
+                    transform: "scaleX(1)",
+                  },
+                },
+              }}
+            >
+              Bici
             </Button>
             <Button
               onClick={() => handleMenuToggle("chiSiamo")}
               color="inherit"
+              disableRipple
               sx={{
                 fontSize: "1.5rem",
                 fontWeight: "bold",
                 textTransform: "none",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: "12px",
+                  left: "8px",
+                  right: "8px",
+                  height: "2px",
+                  backgroundColor: "primary.main",
+                  transform: "scaleX(0)",
+                  transition: "transform 0.3s ease-in-out",
+                },
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  transition: "all 0.2s ease-in-out",
+                  "&::after": {
+                    transform: "scaleX(1)",
+                  },
+                },
               }}
             >
               Chi Siamo
-            </Button>
-            <Button
-              sx={{
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                textTransform: "none",
-              }}
-              color="inherit"
-              component={RouterLink}
-              to="/escursioni"
-            >
-              Escursioni
-            </Button>
-            <Button
-              sx={{
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                textTransform: "none",
-              }}
-              color="inherit"
-              component={RouterLink}
-              to="/news"
-            >
-              News
             </Button>
           </Box>
 
@@ -235,6 +333,13 @@ const Header: React.FC = () => {
               title="Webcam"
               component={RouterLink}
               to="/webcam"
+              sx={{
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  opacity: 0.5,
+                  transition: "all 0.2s ease-in-out",
+                },
+              }}
             >
               <VideocamIcon />
             </IconButton>
@@ -244,6 +349,13 @@ const Header: React.FC = () => {
                 title="Meteo"
                 component={RouterLink}
                 to="/meteo"
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                    opacity: 0.5,
+                    transition: "all 0.2s ease-in-out",
+                  },
+                }}
               >
                 <WeatherIcon weatherCode={weatherData.weatherCode} width={28} />
                 <Typography
@@ -266,11 +378,31 @@ const Header: React.FC = () => {
                 pl: 1,
               }}
             >
-              <Button color="inherit" size="small">
+              <Button
+                color="inherit"
+                size="small"
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                    opacity: 0.5,
+                    transition: "all 0.2s ease-in-out",
+                  },
+                }}
+              >
                 IT
               </Button>
               <Typography color="inherit">/</Typography>
-              <Button color="inherit" size="small">
+              <Button
+                color="inherit"
+                size="small"
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                    opacity: 0.5,
+                    transition: "all 0.2s ease-in-out",
+                  },
+                }}
+              >
                 EN
               </Button>
             </Box>
@@ -294,27 +426,42 @@ const Header: React.FC = () => {
             <Container>
               <Grid container spacing={5} alignItems="center">
                 <Grid size={{ xs: 12, md: 6 }}>
-                  {currentData?.subItems.map((item) => (
-                    <MuiLink
-                      component={RouterLink}
-                      to={item.linkTo}
-                      key={item.label}
-                      underline="none"
-                      onMouseEnter={() => setHoveredImage(item.imageUrl)}
-                      sx={{
-                        display: "block",
-                        color: "text.primary",
-                        fontSize: "1.5rem",
-                        fontWeight: "bold",
-                        py: 2,
-                        "&:hover": { pl: 1, color: "primary.main" },
-                        transition: "all 0.2s",
-                      }}
-                    >
-                      {/* SOLUZIONE: USIAMO DIRETTAMENTE L'ETICHETTA, SENZA TRADUZIONE QUI */}
-                      {item.label}
-                    </MuiLink>
-                  ))}
+                  {currentData?.subItems.map((item) =>
+                    item.isButton ? ( // 3. LOGICA PER IL BOTTONE SPECIALE
+                      <Box key={item.label} sx={{ mt: 2 }}>
+                        <Button
+                          component={RouterLink}
+                          to={item.linkTo}
+                          variant="contained"
+                          color="primary"
+                          size="large"
+                          sx={{ fontWeight: "bold", borderRadius: "20px" }}
+                        >
+                          <KingBedOutlinedIcon sx={{ mr: 2 }} />
+                          {item.label}
+                        </Button>
+                      </Box>
+                    ) : (
+                      <MuiLink
+                        component={RouterLink}
+                        to={item.linkTo}
+                        key={item.label}
+                        underline="none"
+                        onMouseEnter={() => setHoveredImage(item.imageUrl)}
+                        sx={{
+                          display: "block",
+                          color: "text.primary",
+                          fontSize: "1.5rem",
+                          fontWeight: "bold",
+                          py: 1,
+                          "&:hover": { pl: 1, color: "primary.main" },
+                          transition: "all 0.2s",
+                        }}
+                      >
+                        {item.label}
+                      </MuiLink>
+                    )
+                  )}
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Box
